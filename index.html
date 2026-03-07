@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Contacts">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Contacts</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --blue: #007AFF;
+  --sep: #C6C6C8;
+  --sep-light: #E5E5EA;
+  --label: #000;
+  --secondary: #8E8E93;
+  --bg: #F2F2F7;
+}
+
+body {
+  font-family: -apple-system,'SF Pro Text','Helvetica Neue',sans-serif;
+  background: #fff;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════
+   SHARED: TAB BAR
+═══════════════════════════════════════ */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(249,249,249,0.94);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--sep);
+  display: flex; align-items: flex-start;
+  padding: 10px 0 28px; z-index: 300;
+  height: 83px;
+}
+.tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  cursor: pointer; border: none; background: none;
+  padding: 0; position: relative;
+}
+.tab-icon-wrap {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.tab-badge {
+  position: absolute; top: -5px; right: -10px;
+  background: #FF3B30; color: white;
+  font-size: 10px; font-weight: 700; line-height: 1;
+  border-radius: 9px; padding: 2px 5px;
+  min-width: 18px; text-align: center;
+  border: 1.5px solid rgba(249,249,249,0.94);
+}
+.tab-label { font-size: 10px; letter-spacing: -0.1px; color: var(--secondary); }
+.tab-label.active { color: var(--blue); }
+
+/* ═══════════════════════════════════════
+   LIST VIEW
+═══════════════════════════════════════ */
+#list-view { display: block; padding-bottom: 83px; }
+
+.list-nav {
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px 10px;
+  border-bottom: 0.5px solid var(--sep-light);
+}
+.nav-pill-btn {
+  width: 32px; height: 32px; background: #E5E5EA; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer;
+}
+.list-nav-title {
+  font-size: 17px; font-weight: 600; color: var(--label);
+  user-select: none; padding: 8px 16px; margin: -8px -16px;
+}
+
+.my-card {
+  display: flex; align-items: center;
+  padding: 12px 20px; gap: 14px;
+  border-bottom: 0.5px solid var(--sep-light);
+  background: #fff;
+}
+.my-card-avatar {
+  width: 46px; height: 46px; border-radius: 50%; background: #636366;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 500; color: white; flex-shrink: 0;
+}
+.my-card-name { font-size: 17px; font-weight: 600; color: var(--label); }
+.my-card-sub  { font-size: 13px; color: var(--secondary); margin-top: 1px; }
+
+.section-letter {
+  font-size: 15px; font-weight: 600; color: var(--label);
+  padding: 6px 20px 3px; background: #fff;
+  border-bottom: 0.5px solid var(--sep-light);
+}
+.contact-row {
+  display: flex; align-items: center;
+  padding: 9px 20px; gap: 14px;
+  border-bottom: 0.5px solid var(--sep-light);
+  cursor: pointer; background: white; user-select: none;
+}
+.contact-row:active { background: #F2F2F7; }
+.avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 500; color: white; flex-shrink: 0;
+}
+.contact-name { font-size: 17px; color: var(--label); }
+.contact-name .bold { font-weight: 600; }
+
+#section-index {
+  position: fixed; right: 4px; top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; z-index: 200;
+}
+#section-index span {
+  font-size: 11px; font-weight: 600; color: var(--blue);
+  width: 18px; text-align: center; line-height: 14px;
+}
+
+/* ═══════════════════════════════════════
+   DETAIL VIEW
+═══════════════════════════════════════ */
+#detail-view {
+  display: none; min-height: 100vh; padding-bottom: 90px;
+  background: linear-gradient(160deg,#c8cfe8 0%,#b0bcd8 35%,#9aa4c8 65%,#8890b8 100%);
+}
+.detail-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px;
+}
+.detail-back-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.28); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer;
+}
+.detail-edit-btn {
+  background: rgba(255,255,255,0.28); border-radius: 16px;
+  padding: 6px 14px; font-size: 15px; color: white;
+  border: none; cursor: pointer;
+}
+.detail-header {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 16px 18px; gap: 12px;
+}
+.detail-avatar-circle {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(170,178,210,0.45); backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-avatar-initials { font-size: 46px; font-weight: 300; color: white; }
+.detail-name { font-size: 28px; font-weight: 700; color: white; text-align: center; letter-spacing: -0.5px; }
+.detail-actions { display: flex; justify-content: center; gap: 16px; padding: 0 20px 20px; }
+.detail-action { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; cursor: pointer; }
+.detail-action-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 0.5px solid rgba(255,255,255,0.38);
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-action-label { font-size: 12px; color: rgba(255,255,255,0.85); }
+.glass-card {
+  background: rgba(255,255,255,0.16); backdrop-filter: blur(20px);
+  border-radius: 14px; margin: 0 16px 12px;
+  border: 0.5px solid rgba(255,255,255,0.28); overflow: hidden;
+}
+.glass-div { height: 0.5px; background: rgba(255,255,255,0.22); margin: 0 16px; }
+.glass-row { padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; }
+.glass-label { font-size: 13px; color: rgba(255,255,255,0.68); margin-bottom: 2px; }
+.glass-value { font-size: 17px; color: white; }
+.glass-single { padding: 14px 16px; font-size: 17px; color: white; }
+.glass-call-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(90,110,180,0.45);
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer; flex-shrink: 0;
+}
+.shimmer {
+  background: linear-gradient(90deg,rgba(255,255,255,0.08) 25%,rgba(255,255,255,0.22) 50%,rgba(255,255,255,0.08) 75%);
+  background-size: 200% 100%; animation: sh 0.7s ease-in-out;
+  border-radius: 4px; color: transparent !important;
+}
+@keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ═══════════════════════════════════════
+   SETTINGS VIEW — full screen dark page
+═══════════════════════════════════════ */
+#settings-view {
+  display: none;
+  position: fixed; inset: 0; z-index: 500;
+  background: #000; overflow-y: auto;
+  padding-bottom: 40px;
+}
+
+.sv-nav {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(28,28,30,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid #38383A;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 12px;
+}
+.sv-nav-title { font-size: 17px; font-weight: 600; color: white; }
+.sv-nav-btn {
+  font-size: 17px; color: #007AFF; background: none;
+  border: none; cursor: pointer; padding: 4px 0; font-weight: 400;
+}
+.sv-nav-btn.bold { font-weight: 600; }
+
+/* Section label */
+.sv-section {
+  font-size: 13px; font-weight: 400; color: #8E8E93;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 22px 20px 8px;
+}
+
+/* Grouped card */
+.sv-card { background: #1C1C1E; border-radius: 12px; margin: 0 16px; overflow: hidden; }
+.sv-card + .sv-section { /* extra top space handled by sv-section */ }
+
+.sv-row {
+  display: flex; align-items: center;
+  padding: 12px 16px; gap: 12px;
+  border-top: 0.5px solid #38383A; min-height: 44px;
+}
+.sv-row:first-child { border-top: none; }
+.sv-row-label { font-size: 17px; color: white; min-width: 80px; flex-shrink: 0; }
+.sv-row-label.sm { font-size: 15px; color: #8E8E93; min-width: 70px; }
+.sv-row input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 17px; color: white; text-align: right;
+  font-family: -apple-system, sans-serif;
+}
+.sv-row input::placeholder { color: #48484A; }
+.sv-row input.left { text-align: left; }
+.sv-row textarea {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 17px; color: white; text-align: right;
+  font-family: -apple-system, sans-serif;
+  resize: none; min-height: 60px; line-height: 1.4;
+}
+.sv-row textarea::placeholder { color: #48484A; }
+
+/* Pick header inside card */
+.sv-pick-header {
+  background: #2C2C2E; padding: 8px 16px;
+  font-size: 13px; font-weight: 600; color: #8E8E93;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  border-top: 0.5px solid #38383A;
+}
+.sv-pick-header:first-child { border-top: none; }
+
+/* Toggle switch */
+.sv-toggle-wrap { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 0.5px solid #38383A; }
+.sv-toggle-wrap:first-child { border-top: none; }
+.sv-toggle-left { display: flex; align-items: center; gap: 8px; }
+.sv-toggle-label { font-size: 17px; color: white; }
+.ios-toggle { position: relative; width: 51px; height: 31px; flex-shrink: 0; }
+.ios-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.ios-slider {
+  position: absolute; inset: 0; cursor: pointer;
+  background: #39393D; border-radius: 31px; transition: background 0.2s;
+}
+.ios-slider:before {
+  content: ''; position: absolute;
+  width: 27px; height: 27px; left: 2px; top: 2px;
+  background: white; border-radius: 50%;
+  transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+.ios-toggle input:checked + .ios-slider { background: #34C759; }
+.ios-toggle input:checked + .ios-slider:before { transform: translateX(20px); }
+
+/* Seed row */
+.sv-seed-row {
+  display: none; align-items: center; gap: 12px;
+  padding: 10px 16px 14px; border-top: 0.5px solid #38383A;
+  flex-wrap: wrap;
+}
+.sv-seed-row.on { display: flex; }
+.seed-box {
+  width: 48px; height: 48px; border-radius: 10px;
+  background: #2C2C2E; border: 1.5px solid #48484A;
+  font-size: 26px; font-weight: 600; color: white;
+  text-align: center; outline: none;
+  font-family: -apple-system, sans-serif;
+  transition: border-color 0.15s;
+}
+.seed-box:focus { border-color: #007AFF; }
+.seed-arrow { font-size: 18px; color: #48484A; }
+.seed-result { font-size: 14px; font-weight: 600; color: #34C759; letter-spacing: 0.3px; flex: 1; text-align: right; }
+
+/* Status/info rows */
+.sv-status-card { background: #1C1C1E; border-radius: 12px; margin: 0 16px; overflow: hidden; }
+.sv-status-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; border-top: 0.5px solid #38383A;
+}
+.sv-status-row:first-child { border-top: none; }
+.sv-status-label { font-size: 17px; color: white; }
+.sv-status-value { font-size: 17px; color: #8E8E93; }
+.sv-status-badge {
+  font-size: 13px; font-weight: 700; color: white;
+  padding: 2px 10px; border-radius: 12px; min-width: 28px; text-align: center;
+}
+.sv-status-badge.on  { background: #34C759; }
+.sv-status-badge.off { background: #48484A; }
+
+/* Action buttons */
+.sv-action-btn {
+  display: block; width: calc(100% - 32px); margin: 12px 16px 0;
+  padding: 14px; border-radius: 12px; text-align: center;
+  font-size: 17px; font-weight: 600; border: none; cursor: pointer;
+}
+.sv-action-btn.blue   { background: #007AFF; color: white; }
+.sv-action-btn.red    { background: #1C1C1E; color: #FF3B30; }
+.sv-action-btn.gray   { background: #1C1C1E; color: white; }
+
+/* Performance mode banner */
+#perf-banner {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0;
+  background: #34C759; color: white;
+  font-size: 13px; font-weight: 700; text-align: center;
+  padding: 4px; z-index: 400; letter-spacing: 0.3px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ LIST VIEW ═══════════════════ -->
+<div id="list-view">
+  <div class="list-nav">
+    <button class="nav-pill-btn">
+      <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
+        <path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="list-nav-title" id="contacts-title">Contacts</span>
+    <button class="nav-pill-btn" style="font-size:22px;color:#007AFF;font-weight:300;padding-bottom:1px">+</button>
+  </div>
+
+  <div class="my-card">
+    <div class="my-card-avatar" id="my-card-avatar">CS</div>
+    <div>
+      <div class="my-card-name" id="my-card-name">Caleb Summerhays</div>
+      <div class="my-card-sub">My Card</div>
+    </div>
+  </div>
+
+  <div id="contacts-list"></div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <!-- Calls -->
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="13" fill="#2C2C2E"/>
+          <path d="M9.3 13.1c1.2 2.5 3.4 4.6 5.9 5.9l2-2c.2-.2.6-.3.9-.2 1 .4 2.1.6 3.3.6.5 0 .9.4.9.9v3.2c0 .5-.4.9-.9.9C13.3 22.4 6 15.1 6 6.6c0-.5.4-.9.9-.9H10c.5 0 .9.4.9.9 0 1.2.2 2.3.6 3.3.1.3 0 .6-.2.9l-2 2.3z" fill="#8E8E93"/>
+        </svg>
+        <span class="tab-badge" id="calls-badge">241</span>
+      </div>
+      <span class="tab-label">Calls</span>
+    </button>
+    <!-- Contacts (active) -->
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="11" fill="#007AFF"/>
+          <circle cx="14" cy="11" r="3.5" fill="white"/>
+          <path d="M7 21.5c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="tab-label active">Contacts</span>
+    </button>
+    <!-- Keypad — tap = perf mode on, double-tap = off -->
+    <button class="tab" id="keypad-tab">
+      <div class="tab-icon-wrap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="5" cy="5" r="1.8" fill="#8E8E93"/>
+          <circle cx="12" cy="5" r="1.8" fill="#8E8E93"/>
+          <circle cx="19" cy="5" r="1.8" fill="#8E8E93"/>
+          <circle cx="5" cy="12" r="1.8" fill="#8E8E93"/>
+          <circle cx="12" cy="12" r="1.8" fill="#8E8E93"/>
+          <circle cx="19" cy="12" r="1.8" fill="#8E8E93"/>
+          <circle cx="5" cy="19" r="1.8" fill="#8E8E93"/>
+          <circle cx="12" cy="19" r="1.8" fill="#8E8E93"/>
+          <circle cx="19" cy="19" r="1.8" fill="#8E8E93"/>
+        </svg>
+      </div>
+      <span class="tab-label">Keypad</span>
+    </button>
+    <!-- Search -->
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
+          <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="tab-label">Search</span>
+    </button>
+  </div>
+</div>
+
+<!-- A-Z index -->
+<div id="section-index"></div>
+
+<!-- ═══════════════════ DETAIL VIEW ═══════════════════ -->
+<div id="detail-view">
+  <div class="detail-nav">
+    <button class="detail-back-btn" onclick="goBack()">
+      <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+        <path d="M8.5 1.5L1.5 8.5L8.5 15.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="detail-edit-btn">Edit</button>
+  </div>
+
+  <div class="detail-header">
+    <div class="detail-avatar-circle">
+      <div class="detail-avatar-initials" id="detail-initials"></div>
+    </div>
+    <div class="detail-name" id="detail-name"></div>
+  </div>
+
+  <div class="detail-actions">
+    <button class="detail-action">
+      <div class="detail-action-circle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      </div>
+      <span class="detail-action-label">message</span>
+    </button>
+    <button class="detail-action">
+      <div class="detail-action-circle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+      </div>
+      <span class="detail-action-label">call</span>
+    </button>
+    <button class="detail-action">
+      <div class="detail-action-circle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+      </div>
+      <span class="detail-action-label">facetime</span>
+    </button>
+    <button class="detail-action">
+      <div class="detail-action-circle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7" stroke-linecap="round"/></svg>
+      </div>
+      <span class="detail-action-label">mail</span>
+    </button>
+  </div>
+
+  <div class="glass-card">
+    <div class="glass-row">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(100,120,185,0.55);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white" id="poster-initials"></div>
+        <span style="font-size:17px;color:white">Contact Photo &amp; Poster</span>
+      </div>
+      <svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1 1l6 5.5L1 12" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+
+  <div class="glass-card" id="detail-info"></div>
+
+  <div class="glass-card">
+    <div class="glass-single">Send Message</div>
+    <div class="glass-div"></div>
+    <div class="glass-single">Share Contact</div>
+    <div class="glass-div"></div>
+    <div class="glass-single">Add to Favorites</div>
+  </div>
+  <div class="glass-card"><div class="glass-single">Add to Emergency Contacts</div></div>
+  <div class="glass-card"><div class="glass-single">Block Contact</div></div>
+
+  <div class="tab-bar">
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="13" fill="#2C2C2E"/>
+          <path d="M9.3 13.1c1.2 2.5 3.4 4.6 5.9 5.9l2-2c.2-.2.6-.3.9-.2 1 .4 2.1.6 3.3.6.5 0 .9.4.9.9v3.2c0 .5-.4.9-.9.9C13.3 22.4 6 15.1 6 6.6c0-.5.4-.9.9-.9H10c.5 0 .9.4.9.9 0 1.2.2 2.3.6 3.3.1.3 0 .6-.2.9l-2 2.3z" fill="#8E8E93"/>
+        </svg>
+        <span class="tab-badge" id="calls-badge-detail">241</span>
+      </div>
+      <span class="tab-label">Calls</span>
+    </button>
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="11" fill="#007AFF"/>
+          <circle cx="14" cy="11" r="3.5" fill="white"/>
+          <path d="M7 21.5c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="tab-label active">Contacts</span>
+    </button>
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="5" cy="5" r="1.8" fill="#8E8E93"/><circle cx="12" cy="5" r="1.8" fill="#8E8E93"/><circle cx="19" cy="5" r="1.8" fill="#8E8E93"/>
+          <circle cx="5" cy="12" r="1.8" fill="#8E8E93"/><circle cx="12" cy="12" r="1.8" fill="#8E8E93"/><circle cx="19" cy="12" r="1.8" fill="#8E8E93"/>
+          <circle cx="5" cy="19" r="1.8" fill="#8E8E93"/><circle cx="12" cy="19" r="1.8" fill="#8E8E93"/><circle cx="19" cy="19" r="1.8" fill="#8E8E93"/>
+        </svg>
+      </div>
+      <span class="tab-label">Keypad</span>
+    </button>
+    <button class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
+          <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="tab-label">Search</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════ SETTINGS VIEW ═══════════════════ -->
+<div id="settings-view">
+  <div class="sv-nav">
+    <button class="sv-nav-btn" onclick="closeSettings()">Cancel</button>
+    <span class="sv-nav-title">🎩 Trick Setup</span>
+    <button class="sv-nav-btn bold" onclick="saveSettings()">Save</button>
+  </div>
+
+  <!-- ── PERFORMANCE STATUS ── -->
+  <div class="sv-section">Performance</div>
+  <div class="sv-status-card" id="sv-status-card">
+    <div class="sv-status-row">
+      <span class="sv-status-label">Mode</span>
+      <span class="sv-status-badge off" id="sv-perf-badge">OFF</span>
+    </div>
+    <div class="sv-status-row">
+      <span class="sv-status-label">Current Pick</span>
+      <span class="sv-status-value" id="sv-pick-num">0</span>
+    </div>
+    <div class="sv-status-row">
+      <span class="sv-status-label">Next Forced Data</span>
+      <span class="sv-status-value" id="sv-next-phone">—</span>
+    </div>
+  </div>
+  <button class="sv-action-btn red" onclick="resetPickCount()">Reset Pick Counter to Zero</button>
+
+  <!-- ── MY CARD ── -->
+  <div class="sv-section">My Card (shown at top of list)</div>
+  <div class="sv-card">
+    <div class="sv-row">
+      <span class="sv-row-label">Name</span>
+      <input type="text" id="sv-myname" placeholder="Your Name">
+    </div>
+  </div>
+
+  <!-- ── FORCED SEQUENCES ── -->
+  <div class="sv-section">Forced Sequences</div>
+  <div id="sv-sequence-fields"></div>
+
+  <div style="height:20px"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let pickCount = 0;
+let perfMode  = false;
+
+let SEQUENCE = [
+  { phone:"(312) 555-0147", phoneLabel:"mobile", email:"info@example.com", birthday:"March 14", address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
+  { phone:"(773) 555-0288", phoneLabel:"mobile", email:"hello@example.com",   birthday:"July 4",   address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
+  { phone:"(847) 555-0391", phoneLabel:"mobile", email:"contact@example.net", birthday:"October 31",address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
+];
+
+let myName = "Caleb Summerhays";
+
+try {
+  const saved = localStorage.getItem('mc_v2');
+  if (saved) {
+    const p = JSON.parse(saved);
+    if (p.seq)    SEQUENCE = p.seq.map(s=>({...SEQUENCE[0],...s}));
+    if (p.myName) myName   = p.myName;
+  }
+} catch(e){}
+
+// ═══════════════════════════════════════════════════
+//  CONTACTS DATA
+// ═══════════════════════════════════════════════════
+const contacts = [
+  {first:"Aaron",   last:"Mitchell",  color:"#5E5CE6"},
+  {first:"Abby",    last:"Torres",    color:"#FF6B6B"},
+  {first:"Adam",    last:"Reynolds",  color:"#4ECDC4"},
+  {first:"Brian",   last:"Walsh",     color:"#45B7D1"},
+  {first:"Brittany",last:"Kim",       color:"#96CEB4"},
+  {first:"Carlos",  last:"Mendez",    color:"#5E5CE6"},
+  {first:"Chloe",   last:"Anderson",  color:"#A29BFE"},
+  {first:"",        last:"Dad",       color:"#636366"},
+  {first:"Dana",    last:"Fitzgerald",color:"#FD79A8"},
+  {first:"Derek",   last:"Owens",     color:"#6C5CE7"},
+  {first:"Emily",   last:"Chen",      color:"#E17055"},
+  {first:"Eric",    last:"Novak",     color:"#00B894"},
+  {first:"Fiona",   last:"MacGregor", color:"#FDCB6E"},
+  {first:"Greg",    last:"Patel",     color:"#74B9FF"},
+  {first:"Hannah",  last:"Brooks",    color:"#FF7675"},
+  {first:"Jake",    last:"Sullivan",  color:"#55EFC4"},
+  {first:"Jamie",   last:"Rivera",    color:"#A29BFE"},
+  {first:"Jessica", last:"Park",      color:"#FD79A8"},
+  {first:"Kevin",   last:"O'Brien",   color:"#6C5CE7"},
+  {first:"Laura",   last:"Simmons",   color:"#E17055"},
+  {first:"Liam",    last:"Torres",    color:"#00B894"},
+  {first:"Lisa",    last:"Nakamura",  color:"#FDCB6E"},
+  {first:"Marcus",  last:"Webb",      color:"#74B9FF"},
+  {first:"Megan",   last:"Hart",      color:"#FF7675"},
+  {first:"Mike",    last:"from gym",  color:"#636366"},
+  {first:"",        last:"Mom",       color:"#E84393"},
+  {first:"Nathan",  last:"Cross",     color:"#5E5CE6"},
+  {first:"Nicole",  last:"Foster",    color:"#4ECDC4"},
+  {first:"Olivia",  last:"Grant",     color:"#45B7D1"},
+  {first:"Patrick", last:"Dunn",      color:"#96CEB4"},
+  {first:"Rachel",  last:"Wong",      color:"#FF6B6B"},
+  {first:"Ryan",    last:"Clarke",    color:"#A29BFE"},
+  {first:"Samantha",last:"Lee",       color:"#FD79A8"},
+  {first:"Sarah",   last:"Johnson",   color:"#6C5CE7"},
+  {first:"Scott",   last:"Bellamy",   color:"#E17055"},
+  {first:"Sofia",   last:"Delgado",   color:"#00B894"},
+  {first:"Tom",     last:"Harrington",color:"#FDCB6E"},
+  {first:"Tyler",   last:"Banks",     color:"#74B9FF"},
+  {first:"Victoria",last:"Moss",      color:"#FF7675"},
+  {first:"Will",    last:"Carpenter", color:"#55EFC4"},
+  {first:"Zoe",     last:"Fletcher",  color:"#A29BFE"},
+];
+
+const dName  = c => c.first ? c.first+' '+c.last : c.last;
+const inits  = c => c.first ? (c.first[0]+c.last[0]).toUpperCase() : c.last.substring(0,2).toUpperCase();
+const sortK  = c => (c.first ? c.last : c.last).toUpperCase();
+
+// ═══════════════════════════════════════════════════
+//  RENDER LIST
+// ═══════════════════════════════════════════════════
+function renderList() {
+  const parts = myName.trim().split(' ');
+  const myInits = parts.length>1 ? (parts[0][0]+parts[parts.length-1][0]).toUpperCase() : myName.substring(0,2).toUpperCase();
+  document.getElementById('my-card-name').textContent  = myName;
+  document.getElementById('my-card-avatar').textContent = myInits;
+
+  const list = document.getElementById('contacts-list');
+  const idx  = document.getElementById('section-index');
+  list.innerHTML = ''; idx.innerHTML = '';
+
+  const groups = {};
+  contacts.forEach(c => {
+    const k = sortK(c)[0];
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(c);
+  });
+
+  Object.keys(groups).sort().forEach(letter => {
+    const hdr = document.createElement('div');
+    hdr.className = 'section-letter';
+    hdr.textContent = letter;
+    list.appendChild(hdr);
+
+    groups[letter].sort((a,b)=>sortK(a).localeCompare(sortK(b))).forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'contact-row';
+      const nameHtml = c.first
+        ? `${c.first} <span class="bold">${c.last}</span>`
+        : `<span class="bold">${c.last}</span>`;
+      row.innerHTML = `
+        <div class="avatar" style="background:${c.color}">${inits(c)}</div>
+        <div class="contact-name">${nameHtml}</div>
+      `;
+      row.addEventListener('click', ()=>openContact(c));
+      list.appendChild(row);
+    });
+
+    const s = document.createElement('span');
+    s.textContent = letter;
+    idx.appendChild(s);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  OPEN CONTACT
+// ═══════════════════════════════════════════════════
+function openContact(c) {
+  const fi = Math.min(pickCount, SEQUENCE.length-1);
+  const f  = SEQUENCE[fi];
+  pickCount++;
+  updateStatusPanel();
+
+  document.getElementById('detail-name').textContent     = dName(c);
+  document.getElementById('detail-initials').textContent = inits(c);
+  document.getElementById('poster-initials').textContent = inits(c);
+  document.getElementById('section-index').style.display = 'none';
+
+  const info = document.getElementById('detail-info');
+  info.innerHTML = `
+    <div class="glass-row"><div><div class="glass-label shimmer">mobile</div><div class="glass-value shimmer">___________</div></div></div>
+    <div class="glass-div"></div>
+    <div class="glass-row"><div><div class="glass-label shimmer">notes</div><div class="glass-value shimmer">______</div></div></div>
+  `;
+
+  document.getElementById('list-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = 'block';
+  window.scrollTo(0,0);
+
+  setTimeout(()=>{
+    let rows = '';
+
+    if (f.phone) rows += `
+      <div class="glass-row">
+        <div><div class="glass-label">${f.phoneLabel||'mobile'}</div><div class="glass-value">${f.phone}</div></div>
+        <button class="glass-call-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button>
+      </div>`;
+
+    if (f.email) rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">email</div><div class="glass-value" style="font-size:15px">${f.email}</div></div></div>`;
+    if (f.birthday) rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">birthday</div><div class="glass-value">${f.birthday}</div></div></div>`;
+    if (f.company)  rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">company</div><div class="glass-value">${f.company}</div></div></div>`;
+    if (f.address)  rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">address</div><div class="glass-value" style="font-size:15px">${f.address}</div></div></div>`;
+
+    const notesVal = f.notes
+      ? `<div class="glass-value" style="font-size:15px;line-height:1.4;white-space:pre-wrap">${f.notes}</div>`
+      : `<div class="glass-value" style="opacity:0.35;font-size:15px"> </div>`;
+    rows += `<div class="glass-div"></div><div class="glass-row"><div style="flex:1"><div class="glass-label">notes</div>${notesVal}</div></div>`;
+
+    info.innerHTML = rows;
+  }, 420);
+}
+
+// ═══════════════════════════════════════════════════
+//  BACK
+// ═══════════════════════════════════════════════════
+function goBack() {
+  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('list-view').style.display   = 'block';
+  document.getElementById('section-index').style.display = 'flex';
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════════════
+//  PERFORMANCE MODE
+// ═══════════════════════════════════════════════════
+function setBadge(val) {
+  document.getElementById('calls-badge').textContent        = val;
+  document.getElementById('calls-badge-detail').textContent = val;
+}
+
+function setPerfMode(on) {
+  perfMode = on;
+  if (on) {
+    pickCount = 0;
+    setBadge('242');
+  } else {
+    setBadge('241');
+  }
+  updateStatusPanel();
+}
+
+function updateStatusPanel() {
+  const badge = document.getElementById('sv-perf-badge');
+  if (badge) {
+    badge.textContent = perfMode ? 'ON' : 'OFF';
+    badge.className   = 'sv-status-badge ' + (perfMode ? 'on' : 'off');
+  }
+  const pn = document.getElementById('sv-pick-num');
+  if (pn) pn.textContent = pickCount;
+  const np = document.getElementById('sv-next-phone');
+  if (np) {
+    const next = SEQUENCE[Math.min(pickCount, SEQUENCE.length-1)];
+    np.textContent = next ? next.phone : '—';
+  }
+}
+
+function resetPickCount() {
+  pickCount = 0;
+  updateStatusPanel();
+}
+
+// Keypad tab: single tap = perf on, double tap = perf off
+let keypadLastTap = 0;
+document.getElementById('keypad-tab').addEventListener('click', () => {
+  const now = Date.now();
+  if (now - keypadLastTap < 350) {
+    // double tap — turn OFF
+    setPerfMode(false);
+  } else {
+    // single tap — turn ON (setTimeout to wait for possible double)
+    setTimeout(() => {
+      const since = Date.now() - keypadLastTap;
+      if (since > 300) setPerfMode(true);
+    }, 360);
+  }
+  keypadLastTap = now;
+});
+
+// ═══════════════════════════════════════════════════
+//  MAGIC NUMBER
+// ═══════════════════════════════════════════════════
+function magicNumber(a, b) {
+  const d = [a, b];
+  while (d.length < 10) d.push((d[d.length-2]+d[d.length-1])%10);
+  return `(${d[0]}${d[1]}${d[2]}) ${d[3]}${d[4]}${d[5]}-${d[6]}${d[7]}${d[8]}${d[9]}`;
+}
+
+function formatPhoneInput(inp) {
+  let digs = inp.value.replace(/\D/g,'').substring(0,10);
+  let out  = '';
+  if (digs.length > 0) out  = '(' + digs.substring(0,3);
+  if (digs.length >= 4) out += ') ' + digs.substring(3,6);
+  if (digs.length >= 7) out += '-' + digs.substring(6,10);
+  inp.value = out;
+}
+
+// ═══════════════════════════════════════════════════
+//  BUILD SETTINGS FIELDS
+// ═══════════════════════════════════════════════════
+function buildSettingsFields() {
+  const container = document.getElementById('sv-sequence-fields');
+  container.innerHTML = '';
+
+  SEQUENCE.forEach((s, i) => {
+    const n    = i + 1;
+    const seed = s.magicSeed || '';
+    const on   = s.useMagic  || false;
+    const d1   = seed[0] || '';
+    const d2   = seed[1] || '';
+
+    const card = document.createElement('div');
+    card.className = 'sv-card';
+    card.style.marginBottom = '4px';
+
+    card.innerHTML = `
+      <div class="sv-pick-header" style="border-top:none">Pick ${n}</div>
+
+      <!-- Magic toggle -->
+      <div class="sv-toggle-wrap">
+        <div class="sv-toggle-left">
+          <span style="font-size:17px">🎩</span>
+          <span class="sv-toggle-label">Magic Number</span>
+        </div>
+        <label class="ios-toggle">
+          <input type="checkbox" id="sv${n}-magic" ${on?'checked':''} onchange="svToggleMagic(${n})">
+          <span class="ios-slider"></span>
+        </label>
+      </div>
+
+      <!-- Seed row -->
+      <div class="sv-seed-row ${on?'on':''}" id="sv${n}-seed-row">
+        <input class="seed-box" type="number" min="0" max="9" id="sv${n}-d1" value="${d1}" placeholder="7"
+          oninput="this.value=this.value.slice(0,1);svSeedPreview(${n})">
+        <span class="seed-arrow">→</span>
+        <input class="seed-box" type="number" min="0" max="9" id="sv${n}-d2" value="${d2}" placeholder="1"
+          oninput="this.value=this.value.slice(0,1);svSeedPreview(${n})">
+        <span class="seed-result" id="sv${n}-seed-result">${d1!==''&&d2!==''?magicNumber(+d1,+d2):''}</span>
+      </div>
+
+      <!-- Phone (hidden when magic on) -->
+      <div class="sv-row" id="sv${n}-phone-row" style="${on?'display:none':''}">
+        <span class="sv-row-label sm">Phone</span>
+        <input type="text" inputmode="numeric" id="sv${n}-phone"
+          value="${s.phone||''}" placeholder="(000) 000-0000"
+          oninput="formatPhoneInput(this)">
+      </div>
+
+      <div class="sv-row">
+        <span class="sv-row-label sm">Email</span>
+        <input type="email" id="sv${n}-email" value="${s.email||''}" placeholder="email@example.com">
+      </div>
+      <div class="sv-row">
+        <span class="sv-row-label sm">Birthday</span>
+        <input type="text" id="sv${n}-bday" value="${s.birthday||''}" placeholder="Month Day">
+      </div>
+      <div class="sv-row">
+        <span class="sv-row-label sm">Company</span>
+        <input type="text" id="sv${n}-company" value="${s.company||''}" placeholder="Optional">
+      </div>
+      <div class="sv-row">
+        <span class="sv-row-label sm">Address</span>
+        <input type="text" id="sv${n}-address" value="${s.address||''}" placeholder="Optional">
+      </div>
+      <div class="sv-row" style="align-items:flex-start;padding-top:14px">
+        <span class="sv-row-label sm" style="padding-top:2px">Notes</span>
+        <textarea id="sv${n}-notes" placeholder="Optional notes...">${s.notes||''}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function svToggleMagic(n) {
+  const on = document.getElementById(`sv${n}-magic`).checked;
+  document.getElementById(`sv${n}-seed-row`).classList.toggle('on', on);
+  document.getElementById(`sv${n}-phone-row`).style.display = on ? 'none' : '';
+  if (on) svSeedPreview(n);
+}
+
+function svSeedPreview(n) {
+  const d1 = document.getElementById(`sv${n}-d1`).value;
+  const d2 = document.getElementById(`sv${n}-d2`).value;
+  const el = document.getElementById(`sv${n}-seed-result`);
+  el.textContent = (d1!==''&&d2!=='') ? magicNumber(+d1,+d2) : '';
+}
+
+// ═══════════════════════════════════════════════════
+//  SETTINGS OPEN / CLOSE / SAVE
+// ═══════════════════════════════════════════════════
+function openSettings() {
+  buildSettingsFields();
+  document.getElementById('sv-myname').value = myName;
+  updateStatusPanel();
+  document.getElementById('settings-view').style.display = 'block';
+  document.getElementById('settings-view').scrollTop = 0;
+}
+
+function closeSettings() {
+  document.getElementById('settings-view').style.display = 'none';
+}
+
+function saveSettings() {
+  SEQUENCE = SEQUENCE.map((_,i) => {
+    const n       = i+1;
+    const useMagic= document.getElementById(`sv${n}-magic`).checked;
+    const d1      = document.getElementById(`sv${n}-d1`).value;
+    const d2      = document.getElementById(`sv${n}-d2`).value;
+    const phone   = useMagic && d1!=='' && d2!==''
+      ? magicNumber(+d1,+d2)
+      : (document.getElementById(`sv${n}-phone`).value || SEQUENCE[i].phone);
+    return {
+      phone,
+      phoneLabel: "mobile",
+      email:      document.getElementById(`sv${n}-email`).value,
+      birthday:   document.getElementById(`sv${n}-bday`).value,
+      company:    document.getElementById(`sv${n}-company`).value,
+      address:    document.getElementById(`sv${n}-address`).value,
+      notes:      document.getElementById(`sv${n}-notes`).value,
+      useMagic,
+      magicSeed:  useMagic ? `${d1}${d2}` : '',
+    };
+  });
+
+  const nm = document.getElementById('sv-myname').value.trim();
+  if (nm) myName = nm;
+
+  try { localStorage.setItem('mc_v2', JSON.stringify({seq:SEQUENCE, myName})); } catch(e){}
+
+  renderList();
+  closeSettings();
+}
+
+// ═══════════════════════════════════════════════════
+//  SECRET TRIGGERS — open settings
+// ═══════════════════════════════════════════════════
+let titleLastTap = 0;
+document.getElementById('contacts-title').addEventListener('click', () => {
+  const now = Date.now();
+  if (now - titleLastTap < 350) openSettings();
+  titleLastTap = now;
+});
+
+let touchStart = 0, touchFingers = 0;
+document.getElementById('list-view').addEventListener('touchstart', e => {
+  touchFingers = e.touches.length;
+  if (touchFingers === 2) touchStart = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+}, {passive:true});
+document.getElementById('list-view').addEventListener('touchend', e => {
+  if (touchFingers === 2) {
+    const endY = e.changedTouches[0]?.clientY || 0;
+    if (endY - touchStart > 55) openSettings();
+  }
+  touchFingers = 0;
+}, {passive:true});
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+renderList();
+setBadge('241');
+
+// ── Register Service Worker ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
