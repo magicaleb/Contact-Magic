@@ -39,8 +39,8 @@ body {
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-top: 0.5px solid var(--sep);
   display: flex; align-items: flex-start;
-  padding: 10px 0 28px; z-index: 300;
-  height: 83px;
+  padding: 10px 0 env(safe-area-inset-bottom, 0px); z-index: 300;
+  height: calc(49px + env(safe-area-inset-bottom, 0px));
 }
 .tab {
   flex: 1; display: flex; flex-direction: column;
@@ -67,7 +67,7 @@ body {
 /* ═══════════════════════════════════════
    LIST VIEW
 ═══════════════════════════════════════ */
-#list-view { display: block; padding-bottom: 83px; }
+#list-view { display: block; padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); }
 
 .list-nav {
   background: rgba(255,255,255,0.94);
@@ -135,7 +135,7 @@ body {
    DETAIL VIEW
 ═══════════════════════════════════════ */
 #detail-view {
-  display: none; min-height: 100vh; padding-bottom: 90px;
+  display: none; min-height: 100vh; padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(160deg,#c8cfe8 0%,#b0bcd8 35%,#9aa4c8 65%,#8890b8 100%);
 }
 .detail-nav {
@@ -204,11 +204,12 @@ body {
   display: none;
   position: fixed; inset: 0; z-index: 500;
   background: #000; overflow-y: auto;
-  padding-bottom: 40px;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
 }
 
 .sv-nav {
-  position: sticky; top: 0; z-index: 10;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
   background: rgba(28,28,30,0.95);
   backdrop-filter: blur(20px);
   border-bottom: 0.5px solid #38383A;
