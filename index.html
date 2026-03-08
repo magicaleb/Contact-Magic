@@ -69,14 +69,14 @@ body {
 /* ═══════════════════════════════════════
    LIST VIEW
 ═══════════════════════════════════════ */
-#list-view { display: block; padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); }
+#list-view { display: block; padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: none; }
 
 .list-nav {
   background: rgba(255,255,255,0.94);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   position: sticky; top: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px 10px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 10px;
   border-bottom: 0.5px solid var(--sep-light);
 }
 .nav-pill-btn {
@@ -137,13 +137,16 @@ body {
    DETAIL VIEW
 ═══════════════════════════════════════ */
 #detail-view {
-  display: none; min-height: 100vh; padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(160deg,#c8cfe8 0%,#b0bcd8 35%,#9aa4c8 65%,#8890b8 100%);
+  display: none; min-height: 100vh; padding-top: env(safe-area-inset-top, 0px); padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(160deg,#a8b2d8 0%,#8e9cc8 35%,#7280b8 65%,#6070a8 100%);
+  overscroll-behavior: none;
 }
 .detail-nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 10px;
-  position: sticky; top: 0; z-index: 100;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 100;
+  background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-radius: 0 0 18px 18px;
 }
 .detail-back-btn {
   width: 36px; height: 36px; border-radius: 50%;
@@ -936,7 +939,7 @@ function onSearchInput() {
   // Performance mode: when search narrows to 3 or fewer results, silently log the top
   // contact so it can be revealed later via a long-press peek. Search is NOT auto-cleared —
   // the user clears it themselves after noting the name.
-  if (perfMode && searchQuery.trim() && !lockedContact) {
+  if (perfMode && searchQuery.trim()) {
     const q = searchQuery.trim().toLowerCase();
     const matches = contacts.filter(c => c.last.toLowerCase().includes(q));
     if (matches.length >= 1 && matches.length <= 3) {
@@ -1333,7 +1336,7 @@ function endPeek() {
 }
 
 const contactsTabEl = document.getElementById('contacts-tab-list');
-const LONG_PRESS_DURATION = 400; // ms to hold before peek activates
+const LONG_PRESS_DURATION = 100; // ms to hold before peek activates
 
 contactsTabEl.addEventListener('touchstart', e => {
   peekHoldTimer = setTimeout(startPeek, LONG_PRESS_DURATION);
@@ -1353,7 +1356,7 @@ contactsTabEl.addEventListener('touchcancel', () => {
 
 // Also support mouse for desktop testing
 contactsTabEl.addEventListener('mousedown', () => {
-  peekHoldTimer = setTimeout(startPeek, 400);
+  peekHoldTimer = setTimeout(startPeek, LONG_PRESS_DURATION);
 });
 contactsTabEl.addEventListener('mouseup', () => {
   clearTimeout(peekHoldTimer);
