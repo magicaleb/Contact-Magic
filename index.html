@@ -339,6 +339,51 @@ body {
   font-size: 13px; font-weight: 700; text-align: center;
   padding: 4px; z-index: 400; letter-spacing: 0.3px;
 }
+
+/* Search bar */
+.search-wrap {
+  padding: 8px 16px 10px; background: #fff;
+  border-bottom: 0.5px solid var(--sep-light);
+  display: flex; align-items: center; gap: 10px;
+}
+.search-inner {
+  flex: 1; background: #EFEFF4; border-radius: 10px;
+  display: flex; align-items: center; padding: 7px 10px; gap: 6px;
+}
+.search-inner input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 17px; color: var(--label); font-family: -apple-system, sans-serif;
+}
+.search-inner input::placeholder { color: #8E8E93; }
+.search-cancel-btn {
+  font-size: 17px; color: #007AFF; background: none;
+  border: none; cursor: pointer; padding: 0; display: none; white-space: nowrap;
+}
+.no-results {
+  padding: 48px 20px; text-align: center;
+  font-size: 17px; color: #8E8E93;
+}
+
+/* Profile photo in settings */
+.sv-photo-btn {
+  background: #2C2C2E; color: #007AFF; border: none;
+  border-radius: 8px; padding: 6px 14px; font-size: 15px;
+  cursor: pointer; font-family: -apple-system, sans-serif;
+}
+.sv-photo-preview {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #636366; display: flex; align-items: center;
+  justify-content: center; font-size: 16px; font-weight: 500;
+  color: white; overflow: hidden; flex-shrink: 0;
+  background-size: cover; background-position: center;
+}
+
+/* Peek overlay */
+#peek-overlay {
+  display: none; position: fixed; inset: 0; z-index: 450;
+  background: #fff;
+  padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+}
 </style>
 </head>
 <body>
@@ -355,12 +400,24 @@ body {
     <button class="nav-pill-btn" style="font-size:22px;color:#007AFF;font-weight:300;padding-bottom:1px">+</button>
   </div>
 
-  <div class="my-card">
+  <div class="my-card" id="my-card-row">
     <div class="my-card-avatar" id="my-card-avatar">CS</div>
     <div>
       <div class="my-card-name" id="my-card-name">Caleb Summerhays</div>
       <div class="my-card-sub">My Card</div>
     </div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="search-wrap" id="search-wrap">
+    <div class="search-inner">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="2.2"/>
+        <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <input type="search" id="search-input" placeholder="Search" autocomplete="off" oninput="onSearchInput()" onfocus="onSearchFocus()" onblur="onSearchBlur()">
+    </div>
+    <button class="search-cancel-btn" id="search-cancel-btn" onclick="clearSearch()">Cancel</button>
   </div>
 
   <div id="contacts-list"></div>
@@ -379,7 +436,7 @@ body {
       <span class="tab-label">Calls</span>
     </button>
     <!-- Contacts (active) -->
-    <button class="tab">
+    <button class="tab" id="contacts-tab-list">
       <div class="tab-icon-wrap">
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
           <circle cx="14" cy="14" r="11" fill="#007AFF"/>
@@ -421,6 +478,18 @@ body {
 
 <!-- A-Z index -->
 <div id="section-index"></div>
+
+<!-- Peek overlay (shown on long-press of contacts tab when a contact is locked) -->
+<div id="peek-overlay">
+  <div class="list-nav">
+    <button class="nav-pill-btn" style="opacity:0;pointer-events:none">
+      <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="list-nav-title">Contacts</span>
+    <button class="nav-pill-btn" style="opacity:0;pointer-events:none">+</button>
+  </div>
+  <div id="peek-contact-list"></div>
+</div>
 
 <!-- ═══════════════════ DETAIL VIEW ═══════════════════ -->
 <div id="detail-view">
@@ -561,9 +630,26 @@ body {
   <!-- ── MY CARD ── -->
   <div class="sv-section">My Card (shown at top of list)</div>
   <div class="sv-card">
+    <!-- Photo row -->
+    <div class="sv-row" style="justify-content:space-between">
+      <span class="sv-row-label">Photo</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="sv-photo-preview" id="sv-photo-preview">CS</div>
+        <button class="sv-photo-btn" onclick="document.getElementById('sv-photo-input').click()">Upload</button>
+        <input type="file" id="sv-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+      </div>
+    </div>
     <div class="sv-row">
       <span class="sv-row-label">Name</span>
       <input type="text" id="sv-myname" placeholder="Your Name">
+    </div>
+    <div class="sv-row">
+      <span class="sv-row-label sm">Phone</span>
+      <input type="text" inputmode="numeric" id="sv-myphone" placeholder="(000) 000-0000" oninput="formatPhoneInput(this)">
+    </div>
+    <div class="sv-row">
+      <span class="sv-row-label sm">Email</span>
+      <input type="email" id="sv-myemail" placeholder="email@example.com">
     </div>
   </div>
 
@@ -580,6 +666,8 @@ body {
 // ═══════════════════════════════════════════════════
 let pickCount = 0;
 let perfMode  = false;
+let searchQuery = '';
+let lockedContact = null; // { name } set when perf mode search narrows to 1
 
 let SEQUENCE = [
   { phone:"(312) 555-0147", phoneLabel:"mobile", email:"info@example.com", birthday:"March 14", address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
@@ -587,7 +675,10 @@ let SEQUENCE = [
   { phone:"(847) 555-0391", phoneLabel:"mobile", email:"contact@example.net", birthday:"October 31",address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
 ];
 
-let myName = "Caleb Summerhays";
+let myName  = "Caleb Summerhays";
+let myPhone = "";
+let myEmail = "";
+let myPhoto = null; // base64 data URL
 
 try {
   const saved = localStorage.getItem('mc_v2');
@@ -595,114 +686,294 @@ try {
     const p = JSON.parse(saved);
     if (p.seq)    SEQUENCE = p.seq.map(s=>({...SEQUENCE[0],...s}));
     if (p.myName) myName   = p.myName;
+    if (p.myPhone) myPhone = p.myPhone;
+    if (p.myEmail) myEmail = p.myEmail;
+    if (p.myPhoto) myPhoto = p.myPhoto;
   }
 } catch(e){}
+
+// ═══════════════════════════════════════════════════
+//  BIRTHDAY FROM PHONE FORMULA
+//  Last two digits A,B → sum1=A+B; month=sum1 if ≤12 else sum1%10||10; day=B+month
+// ═══════════════════════════════════════════════════
+const MONTH_NAMES = ['','January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+
+function phoneToBirthday(phone) {
+  const d = phone.replace(/\D/g,'');
+  if (d.length < 10) return '';
+  const A = +d[8], B = +d[9];
+  const sum1 = A + B;
+  // month: use full sum if ≤12; if sum1=0 or sum1>12 and mod=0, fall back to 10
+  let month = sum1;
+  if (month === 0 || month > 12) {
+    month = sum1 % 10;
+    if (month === 0) month = 10; // avoid month 0
+  }
+  const day = B + month;
+  return `${MONTH_NAMES[month]} ${day}`;
+}
+
+function genEmail(c) {
+  const f = (c.first||'').toLowerCase().replace(/[^a-z]/g,'');
+  const l = (c.last||'').toLowerCase().replace(/\s+/g,'.').replace(/[^a-z.]/g,'');
+  if (!l) return 'contact@gmail.com';
+  return f ? `${f}.${l}@gmail.com` : `${l}@gmail.com`;
+}
 
 // ═══════════════════════════════════════════════════
 //  CONTACTS DATA
 // ═══════════════════════════════════════════════════
 const contacts = [
-  {first:"Aaron",   last:"Mitchell",  color:"#5E5CE6"},
-  {first:"Abby",    last:"Torres",    color:"#FF6B6B"},
-  {first:"Adam",    last:"Reynolds",  color:"#4ECDC4"},
-  {first:"Brian",   last:"Walsh",     color:"#45B7D1"},
-  {first:"Brittany",last:"Kim",       color:"#96CEB4"},
-  {first:"Carlos",  last:"Mendez",    color:"#5E5CE6"},
-  {first:"Chloe",   last:"Anderson",  color:"#A29BFE"},
-  {first:"",        last:"Dad",       color:"#636366"},
-  {first:"Dana",    last:"Fitzgerald",color:"#FD79A8"},
-  {first:"Derek",   last:"Owens",     color:"#6C5CE7"},
-  {first:"Emily",   last:"Chen",      color:"#E17055"},
-  {first:"Eric",    last:"Novak",     color:"#00B894"},
-  {first:"Fiona",   last:"MacGregor", color:"#FDCB6E"},
-  {first:"Greg",    last:"Patel",     color:"#74B9FF"},
-  {first:"Hannah",  last:"Brooks",    color:"#FF7675"},
-  {first:"Jake",    last:"Sullivan",  color:"#55EFC4"},
-  {first:"Jamie",   last:"Rivera",    color:"#A29BFE"},
-  {first:"Jessica", last:"Park",      color:"#FD79A8"},
-  {first:"Kevin",   last:"O'Brien",   color:"#6C5CE7"},
-  {first:"Laura",   last:"Simmons",   color:"#E17055"},
-  {first:"Liam",    last:"Torres",    color:"#00B894"},
-  {first:"Lisa",    last:"Nakamura",  color:"#FDCB6E"},
-  {first:"Marcus",  last:"Webb",      color:"#74B9FF"},
-  {first:"Megan",   last:"Hart",      color:"#FF7675"},
-  {first:"Mike",    last:"from gym",  color:"#636366"},
-  {first:"",        last:"Mom",       color:"#E84393"},
-  {first:"Nathan",  last:"Cross",     color:"#5E5CE6"},
-  {first:"Nicole",  last:"Foster",    color:"#4ECDC4"},
-  {first:"Olivia",  last:"Grant",     color:"#45B7D1"},
-  {first:"Patrick", last:"Dunn",      color:"#96CEB4"},
-  {first:"Rachel",  last:"Wong",      color:"#FF6B6B"},
-  {first:"Ryan",    last:"Clarke",    color:"#A29BFE"},
-  {first:"Samantha",last:"Lee",       color:"#FD79A8"},
-  {first:"Sarah",   last:"Johnson",   color:"#6C5CE7"},
-  {first:"Scott",   last:"Bellamy",   color:"#E17055"},
-  {first:"Sofia",   last:"Delgado",   color:"#00B894"},
-  {first:"Tom",     last:"Harrington",color:"#FDCB6E"},
-  {first:"Tyler",   last:"Banks",     color:"#74B9FF"},
-  {first:"Victoria",last:"Moss",      color:"#FF7675"},
-  {first:"Will",    last:"Carpenter", color:"#55EFC4"},
-  {first:"Zoe",     last:"Fletcher",  color:"#A29BFE"},
+  // ── Original 41 ──
+  {first:"Aaron",   last:"Mitchell",  color:"#5E5CE6", phone:"(312) 555-0147"},
+  {first:"Abby",    last:"Torres",    color:"#FF6B6B", phone:"(773) 555-0288"},
+  {first:"Adam",    last:"Reynolds",  color:"#4ECDC4", phone:"(847) 555-0391"},
+  {first:"Brian",   last:"Walsh",     color:"#45B7D1", phone:"(630) 555-0416"},
+  {first:"Brittany",last:"Kim",       color:"#96CEB4", phone:"(312) 555-0523"},
+  {first:"Carlos",  last:"Mendez",    color:"#5E5CE6", phone:"(773) 555-0645"},
+  {first:"Chloe",   last:"Anderson",  color:"#A29BFE", phone:"(847) 555-0768"},
+  {first:"",        last:"Dad",       color:"#636366", phone:"(630) 555-0881"},
+  {first:"Dana",    last:"Fitzgerald",color:"#FD79A8", phone:"(312) 555-0194"},
+  {first:"Derek",   last:"Owens",     color:"#6C5CE7", phone:"(773) 555-0216"},
+  {first:"Emily",   last:"Chen",      color:"#E17055", phone:"(847) 555-0338"},
+  {first:"Eric",    last:"Novak",     color:"#00B894", phone:"(630) 555-0452"},
+  {first:"Fiona",   last:"MacGregor", color:"#FDCB6E", phone:"(312) 555-0574"},
+  {first:"Greg",    last:"Patel",     color:"#74B9FF", phone:"(773) 555-0696"},
+  {first:"Hannah",  last:"Brooks",    color:"#FF7675", phone:"(847) 555-0719"},
+  {first:"Jake",    last:"Sullivan",  color:"#55EFC4", phone:"(630) 555-0831"},
+  {first:"Jamie",   last:"Rivera",    color:"#A29BFE", phone:"(312) 555-0953"},
+  {first:"Jessica", last:"Park",      color:"#FD79A8", phone:"(773) 555-0175"},
+  {first:"Kevin",   last:"O'Brien",   color:"#6C5CE7", phone:"(847) 555-0297"},
+  {first:"Laura",   last:"Simmons",   color:"#E17055", phone:"(630) 555-0312"},
+  {first:"Liam",    last:"Torres",    color:"#00B894", phone:"(312) 555-0434"},
+  {first:"Lisa",    last:"Nakamura",  color:"#FDCB6E", phone:"(773) 555-0546"},
+  {first:"Marcus",  last:"Webb",      color:"#74B9FF", phone:"(847) 555-0668"},
+  {first:"Megan",   last:"Hart",      color:"#FF7675", phone:"(630) 555-0781"},
+  {first:"Mike",    last:"from gym",  color:"#636366", phone:"(312) 555-0819"},
+  {first:"",        last:"Mom",       color:"#E84393", phone:"(773) 555-0931"},
+  {first:"Nathan",  last:"Cross",     color:"#5E5CE6", phone:"(847) 555-0153"},
+  {first:"Nicole",  last:"Foster",    color:"#4ECDC4", phone:"(630) 555-0275"},
+  {first:"Olivia",  last:"Grant",     color:"#45B7D1", phone:"(312) 555-0398"},
+  {first:"Patrick", last:"Dunn",      color:"#96CEB4", phone:"(773) 555-0411"},
+  {first:"Rachel",  last:"Wong",      color:"#FF6B6B", phone:"(847) 555-0524"},
+  {first:"Ryan",    last:"Clarke",    color:"#A29BFE", phone:"(630) 555-0647"},
+  {first:"Samantha",last:"Lee",       color:"#FD79A8", phone:"(312) 555-0762"},
+  {first:"Sarah",   last:"Johnson",   color:"#6C5CE7", phone:"(773) 555-0884"},
+  {first:"Scott",   last:"Bellamy",   color:"#E17055", phone:"(847) 555-0196"},
+  {first:"Sofia",   last:"Delgado",   color:"#00B894", phone:"(630) 555-0218"},
+  {first:"Tom",     last:"Harrington",color:"#FDCB6E", phone:"(312) 555-0331"},
+  {first:"Tyler",   last:"Banks",     color:"#74B9FF", phone:"(773) 555-0453"},
+  {first:"Victoria",last:"Moss",      color:"#FF7675", phone:"(847) 555-0576"},
+  {first:"Will",    last:"Carpenter", color:"#55EFC4", phone:"(630) 555-0698"},
+  {first:"Zoe",     last:"Fletcher",  color:"#A29BFE", phone:"(312) 555-0711"},
+  // ── 50 Additional contacts ──
+  {first:"Alex",    last:"Turner",    color:"#5E5CE6", phone:"(773) 555-0823"},
+  {first:"Alexis",  last:"Cooper",    color:"#FF6B6B", phone:"(847) 555-0945"},
+  {first:"Amanda",  last:"Phillips",  color:"#4ECDC4", phone:"(630) 555-0167"},
+  {first:"Andrew",  last:"Morris",    color:"#45B7D1", phone:"(312) 555-0289"},
+  {first:"Angela",  last:"Stewart",   color:"#96CEB4", phone:"(708) 555-0302"},
+  {first:"Austin",  last:"James",     color:"#5E5CE6", phone:"(224) 555-0424"},
+  {first:"Brandon", last:"Hughes",    color:"#A29BFE", phone:"(630) 555-0546"},
+  {first:"Brenda",  last:"Ortega",    color:"#FD79A8", phone:"(312) 555-0669"},
+  {first:"Brett",   last:"Crawford",  color:"#6C5CE7", phone:"(773) 555-0781"},
+  {first:"Brianna", last:"Sanders",   color:"#E17055", phone:"(847) 555-0893"},
+  {first:"Brooks",  last:"Martin",    color:"#00B894", phone:"(630) 555-0915"},
+  {first:"Cameron", last:"Hall",      color:"#FDCB6E", phone:"(312) 555-0127"},
+  {first:"Casey",   last:"Allen",     color:"#74B9FF", phone:"(773) 555-0249"},
+  {first:"Chris",   last:"Murphy",    color:"#FF7675", phone:"(847) 555-0362"},
+  {first:"Claire",  last:"Watson",    color:"#55EFC4", phone:"(630) 555-0484"},
+  {first:"Clayton", last:"Evans",     color:"#A29BFE", phone:"(312) 555-0516"},
+  {first:"Connor",  last:"Bell",      color:"#5E5CE6", phone:"(708) 555-0638"},
+  {first:"Courtney",last:"Cox",       color:"#FF6B6B", phone:"(847) 555-0751"},
+  {first:"Crystal", last:"Morgan",    color:"#4ECDC4", phone:"(630) 555-0873"},
+  {first:"Danielle",last:"Bailey",    color:"#45B7D1", phone:"(312) 555-0996"},
+  {first:"David",   last:"Cooper",    color:"#96CEB4", phone:"(773) 555-0218"},
+  {first:"Dawn",    last:"Reed",      color:"#5E5CE6", phone:"(847) 555-0331"},
+  {first:"Dean",    last:"Collins",   color:"#A29BFE", phone:"(630) 555-0453"},
+  {first:"Dylan",   last:"Richardson",color:"#FD79A8", phone:"(312) 555-0576"},
+  {first:"Elena",   last:"Santos",    color:"#6C5CE7", phone:"(773) 555-0698"},
+  {first:"Ethan",   last:"Powell",    color:"#E17055", phone:"(847) 555-0712"},
+  {first:"Eva",     last:"Zimmerman", color:"#00B894", phone:"(630) 555-0834"},
+  {first:"Evan",    last:"Henderson", color:"#FDCB6E", phone:"(312) 555-0956"},
+  {first:"Faith",   last:"Price",     color:"#74B9FF", phone:"(708) 555-0178"},
+  {first:"Frank",   last:"Jenkins",   color:"#FF7675", phone:"(847) 555-0291"},
+  {first:"Gabe",    last:"Ross",      color:"#55EFC4", phone:"(630) 555-0413"},
+  {first:"Grace",   last:"Powell",    color:"#A29BFE", phone:"(312) 555-0535"},
+  {first:"Holly",   last:"Russell",   color:"#5E5CE6", phone:"(773) 555-0657"},
+  {first:"Ian",     last:"Griffin",   color:"#FF6B6B", phone:"(847) 555-0779"},
+  {first:"Iris",    last:"Young",     color:"#4ECDC4", phone:"(630) 555-0892"},
+  {first:"Jason",   last:"Butler",    color:"#45B7D1", phone:"(312) 555-0114"},
+  {first:"Jen",     last:"Nichols",   color:"#96CEB4", phone:"(773) 555-0236"},
+  {first:"Jenny",   last:"Ramirez",   color:"#5E5CE6", phone:"(847) 555-0359"},
+  {first:"Jordan",  last:"Patterson", color:"#A29BFE", phone:"(630) 555-0471"},
+  {first:"Joseph",  last:"Wood",      color:"#FD79A8", phone:"(312) 555-0593"},
+  {first:"Josh",    last:"Walker",    color:"#6C5CE7", phone:"(708) 555-0615"},
+  {first:"Judy",    last:"Peterson",  color:"#E17055", phone:"(847) 555-0738"},
+  {first:"Katie",   last:"Howard",    color:"#00B894", phone:"(630) 555-0851"},
+  {first:"Kelly",   last:"Ward",      color:"#FDCB6E", phone:"(312) 555-0973"},
+  {first:"Kim",     last:"Scott",     color:"#74B9FF", phone:"(773) 555-0195"},
+  {first:"Leah",    last:"Alexander", color:"#FF7675", phone:"(847) 555-0217"},
+  {first:"Lily",    last:"Nguyen",    color:"#55EFC4", phone:"(630) 555-0339"},
+  {first:"Logan",   last:"Russell",   color:"#A29BFE", phone:"(312) 555-0452"},
+  {first:"Matt",    last:"Murray",    color:"#5E5CE6", phone:"(773) 555-0574"},
+  {first:"Melissa", last:"Griffin",   color:"#FF6B6B", phone:"(847) 555-0696"},
 ];
+
+// Auto-compute birthday and email for all contacts from their phone numbers
+contacts.forEach(c => {
+  c.birthday = phoneToBirthday(c.phone);
+  c.email    = genEmail(c);
+});
 
 const dName  = c => c.first ? c.first+' '+c.last : c.last;
 const inits  = c => c.first ? (c.first[0]+c.last[0]).toUpperCase() : c.last.substring(0,2).toUpperCase();
 const sortK  = c => (c.first ? c.last : c.last).toUpperCase();
 
 // ═══════════════════════════════════════════════════
-//  RENDER LIST
+//  RENDER LIST  (supports search filtering)
 // ═══════════════════════════════════════════════════
 function renderList() {
+  // Update My Card avatar
   const parts = myName.trim().split(' ');
   const myInits = parts.length>1 ? (parts[0][0]+parts[parts.length-1][0]).toUpperCase() : myName.substring(0,2).toUpperCase();
-  document.getElementById('my-card-name').textContent  = myName;
-  document.getElementById('my-card-avatar').textContent = myInits;
+  document.getElementById('my-card-name').textContent = myName;
+  const avatarEl = document.getElementById('my-card-avatar');
+  if (myPhoto) {
+    avatarEl.style.backgroundImage   = `url(${myPhoto})`;
+    avatarEl.style.backgroundSize    = 'cover';
+    avatarEl.style.backgroundPosition = 'center';
+    avatarEl.textContent = '';
+  } else {
+    avatarEl.style.backgroundImage = '';
+    avatarEl.textContent = myInits;
+  }
 
   const list = document.getElementById('contacts-list');
   const idx  = document.getElementById('section-index');
   list.innerHTML = ''; idx.innerHTML = '';
 
-  const groups = {};
-  contacts.forEach(c => {
-    const k = sortK(c)[0];
-    if (!groups[k]) groups[k] = [];
-    groups[k].push(c);
-  });
+  // Filter contacts based on search query
+  const q = searchQuery.trim().toLowerCase();
+  let filtered = q
+    ? contacts.filter(c => c.last.toLowerCase().includes(q))
+    : contacts;
 
-  Object.keys(groups).sort().forEach(letter => {
-    const hdr = document.createElement('div');
-    hdr.className = 'section-letter';
-    hdr.textContent = letter;
-    list.appendChild(hdr);
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="no-results">No contacts found</div>';
+    idx.style.display = 'none';
+    return;
+  }
 
-    groups[letter].sort((a,b)=>sortK(a).localeCompare(sortK(b))).forEach(c => {
-      const row = document.createElement('div');
-      row.className = 'contact-row';
-      const nameHtml = c.first
-        ? `${c.first} <span class="bold">${c.last}</span>`
-        : `<span class="bold">${c.last}</span>`;
-      row.innerHTML = `
-        <div class="avatar" style="background:${c.color}">${inits(c)}</div>
-        <div class="contact-name">${nameHtml}</div>
-      `;
-      row.addEventListener('click', ()=>openContact(c));
-      list.appendChild(row);
+  // Hide A-Z index while searching
+  idx.style.display = q ? 'none' : 'flex';
+
+  if (q) {
+    // Flat list when searching — no section letters
+    filtered.sort((a,b)=>sortK(a).localeCompare(sortK(b))).forEach(c => {
+      list.appendChild(makeContactRow(c));
+    });
+  } else {
+    // Grouped by letter
+    const groups = {};
+    filtered.forEach(c => {
+      const k = sortK(c)[0];
+      if (!groups[k]) groups[k] = [];
+      groups[k].push(c);
     });
 
-    const s = document.createElement('span');
-    s.textContent = letter;
-    idx.appendChild(s);
-  });
+    Object.keys(groups).sort().forEach(letter => {
+      const hdr = document.createElement('div');
+      hdr.className = 'section-letter';
+      hdr.textContent = letter;
+      list.appendChild(hdr);
+
+      groups[letter].sort((a,b)=>sortK(a).localeCompare(sortK(b))).forEach(c => {
+        list.appendChild(makeContactRow(c));
+      });
+
+      const s = document.createElement('span');
+      s.textContent = letter;
+      idx.appendChild(s);
+    });
+  }
+}
+
+function makeContactRow(c) {
+  const row = document.createElement('div');
+  row.className = 'contact-row';
+  const nameHtml = c.first
+    ? `${c.first} <span class="bold">${c.last}</span>`
+    : `<span class="bold">${c.last}</span>`;
+  row.innerHTML = `
+    <div class="avatar" style="background:${c.color}">${inits(c)}</div>
+    <div class="contact-name">${nameHtml}</div>
+  `;
+  row.addEventListener('click', ()=>openContact(c));
+  return row;
+}
+
+// ═══════════════════════════════════════════════════
+//  SEARCH
+// ═══════════════════════════════════════════════════
+function onSearchFocus() {
+  document.getElementById('search-cancel-btn').style.display = 'inline';
+}
+function onSearchBlur() {
+  // Don't hide cancel if there's text
+  if (!searchQuery) {
+    document.getElementById('search-cancel-btn').style.display = 'none';
+  }
+}
+function onSearchInput() {
+  searchQuery = document.getElementById('search-input').value;
+  renderList();
+
+  // Performance mode: when search narrows to exactly 1 result, silently log that contact
+  // so it can be revealed later via a long-press peek. Search is NOT auto-cleared —
+  // the user clears it themselves after noting the name.
+  if (perfMode && searchQuery.trim() && !lockedContact) {
+    const q = searchQuery.trim().toLowerCase();
+    const matches = contacts.filter(c => c.last.toLowerCase().includes(q));
+    if (matches.length === 1) {
+      lockedContact = { name: dName(matches[0]), contact: matches[0] };
+      // Badge flips to 3 as a subtle cue to the performer that a name is locked
+      setBadge('3');
+    }
+    // 0 results → do nothing (list already shows "No contacts found" via renderList)
+  }
+}
+function clearSearch() {
+  searchQuery = '';
+  const inp = document.getElementById('search-input');
+  if (inp) inp.value = '';
+  document.getElementById('search-cancel-btn').style.display = 'none';
+  renderList();
 }
 
 // ═══════════════════════════════════════════════════
 //  OPEN CONTACT
 // ═══════════════════════════════════════════════════
 function openContact(c) {
-  const fi = Math.min(pickCount, SEQUENCE.length-1);
-  const f  = SEQUENCE[fi];
-  pickCount++;
-  updateStatusPanel();
+  // Choose data source: forced SEQUENCE when perf mode is ON, dummy data otherwise
+  let f;
+  if (perfMode) {
+    const fi = Math.min(pickCount, SEQUENCE.length-1);
+    f = SEQUENCE[fi];
+    pickCount++;
+    updateStatusPanel();
+  } else {
+    // Show the contact's own dummy info
+    f = {
+      phone:      c.phone    || '',
+      phoneLabel: 'mobile',
+      email:      c.email    || '',
+      birthday:   c.birthday || '',
+      company:    '',
+      address:    '',
+      notes:      '',
+    };
+  }
 
   document.getElementById('detail-name').textContent     = dName(c);
   document.getElementById('detail-initials').textContent = inits(c);
@@ -729,7 +1000,7 @@ function openContact(c) {
         <button class="glass-call-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button>
       </div>`;
 
-    if (f.email) rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">email</div><div class="glass-value" style="font-size:15px">${f.email}</div></div></div>`;
+    if (f.email)    rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">email</div><div class="glass-value" style="font-size:15px">${f.email}</div></div></div>`;
     if (f.birthday) rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">birthday</div><div class="glass-value">${f.birthday}</div></div></div>`;
     if (f.company)  rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">company</div><div class="glass-value">${f.company}</div></div></div>`;
     if (f.address)  rows += `<div class="glass-div"></div><div class="glass-row"><div><div class="glass-label">address</div><div class="glass-value" style="font-size:15px">${f.address}</div></div></div>`;
@@ -749,7 +1020,7 @@ function openContact(c) {
 function goBack() {
   document.getElementById('detail-view').style.display = 'none';
   document.getElementById('list-view').style.display   = 'block';
-  document.getElementById('section-index').style.display = 'flex';
+  document.getElementById('section-index').style.display = searchQuery ? 'none' : 'flex';
   window.scrollTo(0,0);
 }
 
@@ -765,8 +1036,10 @@ function setPerfMode(on) {
   perfMode = on;
   if (on) {
     pickCount = 0;
+    lockedContact = null;
     setBadge('242');
   } else {
+    lockedContact = null;
     setBadge('241');
   }
   updateStatusPanel();
@@ -914,7 +1187,36 @@ function svSeedPreview(n) {
   const d1 = document.getElementById(`sv${n}-d1`).value;
   const d2 = document.getElementById(`sv${n}-d2`).value;
   const el = document.getElementById(`sv${n}-seed-result`);
-  el.textContent = (d1!==''&&d2!=='') ? magicNumber(+d1,+d2) : '';
+  if (d1 !== '' && d2 !== '') {
+    const phone = magicNumber(+d1, +d2);
+    el.textContent = phone;
+    // Auto-fill birthday from phone
+    const bdayField = document.getElementById(`sv${n}-bday`);
+    if (bdayField) bdayField.value = phoneToBirthday(phone);
+  } else {
+    el.textContent = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  PROFILE PHOTO UPLOAD
+// ═══════════════════════════════════════════════════
+function handlePhotoUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    myPhoto = e.target.result;
+    // Update settings preview
+    const prev = document.getElementById('sv-photo-preview');
+    if (prev) {
+      prev.style.backgroundImage   = `url(${myPhoto})`;
+      prev.style.backgroundSize    = 'cover';
+      prev.style.backgroundPosition = 'center';
+      prev.textContent = '';
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 // ═══════════════════════════════════════════════════
@@ -922,7 +1224,24 @@ function svSeedPreview(n) {
 // ═══════════════════════════════════════════════════
 function openSettings() {
   buildSettingsFields();
-  document.getElementById('sv-myname').value = myName;
+  document.getElementById('sv-myname').value  = myName;
+  document.getElementById('sv-myphone').value = myPhone;
+  document.getElementById('sv-myemail').value = myEmail;
+
+  // Photo preview
+  const prev = document.getElementById('sv-photo-preview');
+  const parts = myName.trim().split(' ');
+  const myInits = parts.length>1 ? (parts[0][0]+parts[parts.length-1][0]).toUpperCase() : myName.substring(0,2).toUpperCase();
+  if (myPhoto) {
+    prev.style.backgroundImage   = `url(${myPhoto})`;
+    prev.style.backgroundSize    = 'cover';
+    prev.style.backgroundPosition = 'center';
+    prev.textContent = '';
+  } else {
+    prev.style.backgroundImage = '';
+    prev.textContent = myInits;
+  }
+
   updateStatusPanel();
   document.getElementById('settings-view').style.display = 'block';
   document.getElementById('settings-view').scrollTop = 0;
@@ -941,11 +1260,14 @@ function saveSettings() {
     const phone   = useMagic && d1!=='' && d2!==''
       ? magicNumber(+d1,+d2)
       : (document.getElementById(`sv${n}-phone`).value || SEQUENCE[i].phone);
+    const birthday = useMagic && d1!=='' && d2!==''
+      ? phoneToBirthday(phone)
+      : document.getElementById(`sv${n}-bday`).value;
     return {
       phone,
       phoneLabel: "mobile",
       email:      document.getElementById(`sv${n}-email`).value,
-      birthday:   document.getElementById(`sv${n}-bday`).value,
+      birthday,
       company:    document.getElementById(`sv${n}-company`).value,
       address:    document.getElementById(`sv${n}-address`).value,
       notes:      document.getElementById(`sv${n}-notes`).value,
@@ -956,12 +1278,79 @@ function saveSettings() {
 
   const nm = document.getElementById('sv-myname').value.trim();
   if (nm) myName = nm;
+  myPhone = document.getElementById('sv-myphone').value.trim();
+  myEmail = document.getElementById('sv-myemail').value.trim();
 
-  try { localStorage.setItem('mc_v2', JSON.stringify({seq:SEQUENCE, myName})); } catch(e){}
+  try {
+    localStorage.setItem('mc_v2', JSON.stringify({seq:SEQUENCE, myName, myPhone, myEmail, myPhoto}));
+  } catch(e){}
 
   renderList();
   closeSettings();
 }
+
+// ═══════════════════════════════════════════════════
+//  PEEK — long-press Contacts tab to reveal locked contact
+// ═══════════════════════════════════════════════════
+let peekHoldTimer = null;
+let isPeeking = false;
+
+function startPeek() {
+  if (!lockedContact) return;
+  isPeeking = true;
+  const c = lockedContact.contact;
+  const nameHtml = c.first
+    ? `${c.first} <span class="bold">${c.last}</span>`
+    : `<span class="bold">${c.last}</span>`;
+  document.getElementById('peek-contact-list').innerHTML = `
+    <div class="section-letter">${sortK(c)[0]}</div>
+    <div class="contact-row">
+      <div class="avatar" style="background:${c.color}">${inits(c)}</div>
+      <div class="contact-name">${nameHtml}</div>
+    </div>
+  `;
+  document.getElementById('peek-overlay').style.display = 'block';
+}
+
+function endPeek() {
+  if (!isPeeking) return;
+  isPeeking = false;
+  document.getElementById('peek-overlay').style.display = 'none';
+}
+
+const contactsTabEl = document.getElementById('contacts-tab-list');
+const LONG_PRESS_DURATION = 400; // ms to hold before peek activates
+
+contactsTabEl.addEventListener('touchstart', e => {
+  peekHoldTimer = setTimeout(startPeek, LONG_PRESS_DURATION);
+}, {passive: true});
+
+contactsTabEl.addEventListener('touchend', () => {
+  clearTimeout(peekHoldTimer);
+  peekHoldTimer = null;
+  endPeek();
+}, {passive: true});
+
+contactsTabEl.addEventListener('touchcancel', () => {
+  clearTimeout(peekHoldTimer);
+  peekHoldTimer = null;
+  endPeek();
+}, {passive: true});
+
+// Also support mouse for desktop testing
+contactsTabEl.addEventListener('mousedown', () => {
+  peekHoldTimer = setTimeout(startPeek, 400);
+});
+contactsTabEl.addEventListener('mouseup', () => {
+  clearTimeout(peekHoldTimer);
+  peekHoldTimer = null;
+  endPeek();
+});
+contactsTabEl.addEventListener('mouseleave', () => {
+  clearTimeout(peekHoldTimer);
+  peekHoldTimer = null;
+  endPeek();
+});
 
 // ═══════════════════════════════════════════════════
 //  SECRET TRIGGERS — open settings
