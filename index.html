@@ -11,7 +11,8 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Contacts</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+input, textarea { user-select:text; -webkit-user-select:text; }
 
 :root {
   --blue: #007AFF;
@@ -28,6 +29,7 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 /* ═══════════════════════════════════════
@@ -141,6 +143,7 @@ body {
 .detail-nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 10px;
+  position: sticky; top: 0; z-index: 100;
 }
 .detail-back-btn {
   width: 36px; height: 36px; border-radius: 50%;
@@ -344,8 +347,9 @@ body {
 .search-wrap {
   padding: 8px 16px 10px; background: #fff;
   border-bottom: 0.5px solid var(--sep-light);
-  display: flex; align-items: center; gap: 10px;
+  display: none; align-items: center; gap: 10px;
 }
+.search-wrap.visible { display: flex; }
 .search-inner {
   flex: 1; background: #EFEFF4; border-radius: 10px;
   display: flex; align-items: center; padding: 7px 10px; gap: 6px;
@@ -464,7 +468,7 @@ body {
       <span class="tab-label">Keypad</span>
     </button>
     <!-- Search -->
-    <button class="tab">
+    <button class="tab" id="search-tab-list">
       <div class="tab-icon-wrap">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
@@ -929,14 +933,15 @@ function onSearchInput() {
   searchQuery = document.getElementById('search-input').value;
   renderList();
 
-  // Performance mode: when search narrows to exactly 1 result, silently log that contact
-  // so it can be revealed later via a long-press peek. Search is NOT auto-cleared —
+  // Performance mode: when search narrows to 3 or fewer results, silently log the top
+  // contact so it can be revealed later via a long-press peek. Search is NOT auto-cleared —
   // the user clears it themselves after noting the name.
   if (perfMode && searchQuery.trim() && !lockedContact) {
     const q = searchQuery.trim().toLowerCase();
     const matches = contacts.filter(c => c.last.toLowerCase().includes(q));
-    if (matches.length === 1) {
-      lockedContact = { name: dName(matches[0]), contact: matches[0] };
+    if (matches.length >= 1 && matches.length <= 3) {
+      const sorted = [...matches].sort((a,b) => sortK(a).localeCompare(sortK(b)));
+      lockedContact = { name: dName(sorted[0]), contact: sorted[0] };
       // Badge flips to 3 as a subtle cue to the performer that a name is locked
       setBadge('3');
     }
@@ -948,7 +953,16 @@ function clearSearch() {
   const inp = document.getElementById('search-input');
   if (inp) inp.value = '';
   document.getElementById('search-cancel-btn').style.display = 'none';
+  const wrap = document.getElementById('search-wrap');
+  if (wrap) { wrap.classList.remove('visible'); }
   renderList();
+}
+
+function showSearch() {
+  const wrap = document.getElementById('search-wrap');
+  if (wrap) wrap.classList.add('visible');
+  const inp = document.getElementById('search-input');
+  if (inp) { inp.focus(); }
 }
 
 // ═══════════════════════════════════════════════════
@@ -1374,6 +1388,43 @@ document.getElementById('list-view').addEventListener('touchend', e => {
   }
   touchFingers = 0;
 }, {passive:true});
+
+// ═══════════════════════════════════════════════════
+//  SEARCH TAB — show search bar
+// ═══════════════════════════════════════════════════
+document.getElementById('search-tab-list').addEventListener('click', showSearch);
+
+// ═══════════════════════════════════════════════════
+//  MY CARD — open detail view with user's own data
+// ═══════════════════════════════════════════════════
+document.getElementById('my-card-row').addEventListener('click', () => {
+  if (!myName.trim()) return;
+  const nameParts = myName.trim().split(' ');
+  const myFirst = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '';
+  const myLast  = nameParts.length > 1 ? nameParts[nameParts.length - 1] : myName.trim();
+  const c = { first: myFirst, last: myLast, color: '#636366',
+              phone: myPhone || '', email: myEmail || '',
+              birthday: myPhone ? phoneToBirthday(myPhone) : '' };
+  const savedPerf = perfMode;
+  perfMode = false;
+  openContact(c);
+  perfMode = savedPerf;
+});
+
+// ═══════════════════════════════════════════════════
+//  SWIPE RIGHT ON DETAIL VIEW — go back to list
+// ═══════════════════════════════════════════════════
+let detailSwipeX = 0, detailSwipeY = 0;
+document.getElementById('detail-view').addEventListener('touchstart', e => {
+  detailSwipeX = e.touches[0].clientX;
+  detailSwipeY = e.touches[0].clientY;
+}, {passive: true});
+document.getElementById('detail-view').addEventListener('touchend', e => {
+  if (!e.changedTouches || !e.changedTouches.length) return;
+  const dx = e.changedTouches[0].clientX - detailSwipeX;
+  const dy = e.changedTouches[0].clientY - detailSwipeY;
+  if (dx > 60 && Math.abs(dy) < 80) goBack();
+}, {passive: true});
 
 // ═══════════════════════════════════════════════════
 //  INIT
