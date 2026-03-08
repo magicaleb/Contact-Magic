@@ -2,7 +2,7 @@
   "name": "Contacts",
   "short_name": "Contacts",
   "description": "Contacts",
-  "start_url": "/",
+  "start_url": "/Contact-Magic/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
