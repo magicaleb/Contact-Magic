@@ -1,10 +1,10 @@
-const CACHE = 'magic-contacts-v1';
+const CACHE = 'magic-contacts-v2';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/Contact-Magic/',
+  '/Contact-Magic/index.html',
+  '/Contact-Magic/manifest.json',
+  '/Contact-Magic/icons/icon-192.png',
+  '/Contact-Magic/icons/icon-512.png'
 ];
 
 // Install: cache all assets
