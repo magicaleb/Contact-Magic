@@ -856,7 +856,7 @@ function renderList() {
   // Filter contacts based on search query
   const q = searchQuery.trim().toLowerCase();
   let filtered = q
-    ? contacts.filter(c => dName(c).toLowerCase().includes(q))
+    ? contacts.filter(c => c.last.toLowerCase().includes(q))
     : contacts;
 
   if (filtered.length === 0) {
@@ -929,18 +929,18 @@ function onSearchInput() {
   searchQuery = document.getElementById('search-input').value;
   renderList();
 
-  // Performance mode magic: if exactly one result while searching → lock it
+  // Performance mode: when search narrows to exactly 1 result, silently log that contact
+  // so it can be revealed later via a long-press peek. Search is NOT auto-cleared —
+  // the user clears it themselves after noting the name.
   if (perfMode && searchQuery.trim() && !lockedContact) {
     const q = searchQuery.trim().toLowerCase();
-    const matches = contacts.filter(c => dName(c).toLowerCase().includes(q));
+    const matches = contacts.filter(c => c.last.toLowerCase().includes(q));
     if (matches.length === 1) {
       lockedContact = { name: dName(matches[0]), contact: matches[0] };
-      // Badge shows 3 to signal a name has been locked
+      // Badge flips to 3 as a subtle cue to the performer that a name is locked
       setBadge('3');
-      // Brief delay so the user sees the single result, then auto-clear
-      setTimeout(() => { clearSearch(); window.scrollTo(0, 0); }, 300);
     }
-    // 0 results → do nothing special (list already shows empty via renderList)
+    // 0 results → do nothing (list already shows "No contacts found" via renderList)
   }
 }
 function clearSearch() {
