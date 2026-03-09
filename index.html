@@ -174,19 +174,17 @@ body {
 }
 .detail-avatar-initials { font-size: 46px; font-weight: 300; color: white; }
 .detail-name { font-size: 28px; font-weight: 700; color: var(--label); text-align: center; letter-spacing: -0.5px; }
-.detail-actions { display: flex; justify-content: center; gap: 12px; padding: 0 16px 24px; }
-.detail-action { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; cursor: pointer; min-width: 64px; }
+.detail-actions { display: flex; justify-content: center; gap: 16px; padding: 0 16px 24px; }
+.detail-action { display: flex; flex-direction: column; align-items: center; gap: 6px; border: none; background: none; cursor: pointer; min-width: 64px; }
 .detail-action-circle {
-  width: 60px; height: 60px; border-radius: 16px;
-  background: rgba(0, 122, 255, 0.78);
-  backdrop-filter: blur(20px) saturate(200%);
-  -webkit-backdrop-filter: blur(20px) saturate(200%);
-  border: 0.5px solid rgba(255,255,255,0.5);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 8px rgba(0,0,0,0.10);
+  width: 62px; height: 62px; border-radius: 50%;
+  background: #007AFF;
+  box-shadow: 0 2px 8px rgba(0,122,255,0.30);
   display: flex; align-items: center; justify-content: center;
 }
 .detail-action-circle.act-green {
-  background: rgba(52, 199, 89, 0.78);
+  background: #34C759;
+  box-shadow: 0 2px 8px rgba(52,199,89,0.30);
 }
 .detail-action-label { font-size: 12px; color: var(--secondary); letter-spacing: -0.1px; }
 .glass-card {
@@ -476,17 +474,17 @@ body {
   <div class="detail-actions">
     <button class="detail-action">
       <div class="detail-action-circle">
-        <!-- message.fill SF Symbol -->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-          <path d="M4 2h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H10l-5 5v-5H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+        <!-- message.fill: fully rounded speech bubble with tail -->
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+          <path d="M20 2H4C2.34 2 1 3.34 1 5v10c0 1.66 1.34 3 3 3h2v4l5-4h9c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3z"/>
         </svg>
       </div>
       <span class="detail-action-label">message</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle act-green">
-        <!-- phone.fill SF Symbol -->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+        <!-- phone.fill: SF Symbol handset -->
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
           <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.25 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.1.35.01.74-.25 1.01L6.6 10.8z"/>
         </svg>
       </div>
@@ -494,19 +492,19 @@ body {
     </button>
     <button class="detail-action">
       <div class="detail-action-circle act-green">
-        <!-- video.fill SF Symbol -->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-          <path d="M4 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-1.5l4 2.5V8l-4 2.5V8a1 1 0 0 0-1-1H4z"/>
+        <!-- video.fill: SF Symbol video camera -->
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+          <path d="M15 8H3C1.9 8 1 8.9 1 10v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-1.5l4 2.5V9.5L17 12V10c0-1.1-.9-2-2-2z"/>
         </svg>
       </div>
       <span class="detail-action-label">facetime</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
-        <!-- envelope.fill SF Symbol -->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-          <path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v.5L12 12.5 2 6.5V6z"/>
-          <path d="M2 9V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9L12 15 2 9z"/>
+        <!-- envelope.fill: SF Symbol filled envelope -->
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+          <path d="M20 4H4C2.9 4 2 4.9 2 6v.6l10 6.3 10-6.3V6c0-1.1-.9-2-2-2z"/>
+          <path d="M12 14.5L2 8.2V18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8.2L12 14.5z"/>
         </svg>
       </div>
       <span class="detail-action-label">mail</span>
