@@ -69,16 +69,17 @@ body {
 /* ═══════════════════════════════════════
    LIST VIEW
 ═══════════════════════════════════════ */
-#list-view { display: block; padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: none; background: #fff; }
+#list-view { display: block; padding-top: calc(54px + env(safe-area-inset-top, 0px)); padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: none; background: #fff; }
 
 .list-nav {
   background: rgba(255,255,255,0.94);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  position: sticky; top: 0; z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
   padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 10px;
   border-bottom: 0.5px solid var(--sep-light);
 }
+#peek-overlay .list-nav { position: relative; top: auto; left: auto; right: auto; z-index: auto; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .nav-pill-btn {
   width: 32px; height: 32px; background: #E5E5EA; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -137,25 +138,29 @@ body {
    DETAIL VIEW
 ═══════════════════════════════════════ */
 #detail-view {
-  display: none; min-height: 100vh; padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(160deg,#a8b2d8 0%,#8e9cc8 35%,#7280b8 65%,#6070a8 100%);
+  display: none; min-height: 100vh;
+  padding-top: calc(60px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  background: #F2F2F7;
   overscroll-behavior: none;
 }
 .detail-nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px;
-  position: sticky; top: 0; z-index: 100;
-  background: linear-gradient(180deg,rgba(168,178,216,0.72) 0%,transparent 100%);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--sep-light);
 }
 .detail-back-btn {
   width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.28); backdrop-filter: blur(10px);
+  background: #E5E5EA;
   display: flex; align-items: center; justify-content: center;
   border: none; cursor: pointer;
 }
 .detail-edit-btn {
-  background: rgba(255,255,255,0.28); border-radius: 16px;
-  padding: 6px 14px; font-size: 15px; color: white;
+  background: none; border-radius: 16px;
+  padding: 6px 14px; font-size: 15px; color: #007AFF; font-weight: 600;
   border: none; cursor: pointer;
 }
 .detail-header {
@@ -164,39 +169,37 @@ body {
 }
 .detail-avatar-circle {
   width: 120px; height: 120px; border-radius: 50%;
-  background: rgba(170,178,210,0.45); backdrop-filter: blur(10px);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+  background: #636366;
   display: flex; align-items: center; justify-content: center;
 }
 .detail-avatar-initials { font-size: 46px; font-weight: 300; color: white; }
-.detail-name { font-size: 28px; font-weight: 700; color: white; text-align: center; letter-spacing: -0.5px; }
+.detail-name { font-size: 28px; font-weight: 700; color: var(--label); text-align: center; letter-spacing: -0.5px; }
 .detail-actions { display: flex; justify-content: center; gap: 16px; padding: 0 20px 20px; }
 .detail-action { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; cursor: pointer; }
 .detail-action-circle {
   width: 52px; height: 52px; border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: 0.5px solid rgba(255,255,255,0.38);
+  background: #007AFF;
   display: flex; align-items: center; justify-content: center;
 }
-.detail-action-label { font-size: 12px; color: rgba(255,255,255,0.85); }
+.detail-action-label { font-size: 12px; color: var(--secondary); }
 .glass-card {
-  background: rgba(255,255,255,0.16); backdrop-filter: blur(20px);
-  border-radius: 14px; margin: 0 16px 12px;
-  border: 0.5px solid rgba(255,255,255,0.28); overflow: hidden;
+  background: #fff;
+  border-radius: 12px; margin: 0 16px 12px;
+  overflow: hidden;
 }
-.glass-div { height: 0.5px; background: rgba(255,255,255,0.22); margin: 0 16px; }
+.glass-div { height: 0.5px; background: var(--sep-light); margin: 0; }
 .glass-row { padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; }
-.glass-label { font-size: 13px; color: rgba(255,255,255,0.68); margin-bottom: 2px; }
-.glass-value { font-size: 17px; color: white; }
-.glass-single { padding: 14px 16px; font-size: 17px; color: white; }
+.glass-label { font-size: 13px; color: var(--secondary); margin-bottom: 2px; }
+.glass-value { font-size: 17px; color: var(--label); }
+.glass-single { padding: 14px 16px; font-size: 17px; color: #007AFF; }
 .glass-call-btn {
   width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(90,110,180,0.45);
+  background: #34C759;
   display: flex; align-items: center; justify-content: center;
   border: none; cursor: pointer; flex-shrink: 0;
 }
 .shimmer {
-  background: linear-gradient(90deg,rgba(255,255,255,0.08) 25%,rgba(255,255,255,0.22) 50%,rgba(255,255,255,0.08) 75%);
+  background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
   background-size: 200% 100%; animation: sh 0.7s ease-in-out;
   border-radius: 4px; color: transparent !important;
 }
@@ -428,58 +431,6 @@ body {
 
   <div id="contacts-list"></div>
 
-  <!-- TAB BAR -->
-  <div class="tab-bar">
-    <!-- Calls -->
-    <button class="tab">
-      <div class="tab-icon-wrap">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="13" fill="#2C2C2E"/>
-          <path d="M9.3 13.1c1.2 2.5 3.4 4.6 5.9 5.9l2-2c.2-.2.6-.3.9-.2 1 .4 2.1.6 3.3.6.5 0 .9.4.9.9v3.2c0 .5-.4.9-.9.9C13.3 22.4 6 15.1 6 6.6c0-.5.4-.9.9-.9H10c.5 0 .9.4.9.9 0 1.2.2 2.3.6 3.3.1.3 0 .6-.2.9l-2 2.3z" fill="#8E8E93"/>
-        </svg>
-        <span class="tab-badge" id="calls-badge">241</span>
-      </div>
-      <span class="tab-label">Calls</span>
-    </button>
-    <!-- Contacts (active) -->
-    <button class="tab" id="contacts-tab-list">
-      <div class="tab-icon-wrap">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="11" fill="#007AFF"/>
-          <circle cx="14" cy="11" r="3.5" fill="white"/>
-          <path d="M7 21.5c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="tab-label active">Contacts</span>
-    </button>
-    <!-- Keypad — tap = perf mode on, double-tap = off -->
-    <button class="tab" id="keypad-tab">
-      <div class="tab-icon-wrap">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle cx="5" cy="5" r="1.8" fill="#8E8E93"/>
-          <circle cx="12" cy="5" r="1.8" fill="#8E8E93"/>
-          <circle cx="19" cy="5" r="1.8" fill="#8E8E93"/>
-          <circle cx="5" cy="12" r="1.8" fill="#8E8E93"/>
-          <circle cx="12" cy="12" r="1.8" fill="#8E8E93"/>
-          <circle cx="19" cy="12" r="1.8" fill="#8E8E93"/>
-          <circle cx="5" cy="19" r="1.8" fill="#8E8E93"/>
-          <circle cx="12" cy="19" r="1.8" fill="#8E8E93"/>
-          <circle cx="19" cy="19" r="1.8" fill="#8E8E93"/>
-        </svg>
-      </div>
-      <span class="tab-label">Keypad</span>
-    </button>
-    <!-- Search -->
-    <button class="tab" id="search-tab-list">
-      <div class="tab-icon-wrap">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
-          <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="tab-label">Search</span>
-    </button>
-  </div>
 </div>
 
 <!-- A-Z index -->
@@ -502,14 +453,14 @@ body {
   <div class="detail-nav">
     <button class="detail-back-btn" onclick="goBack()">
       <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
-        <path d="M8.5 1.5L1.5 8.5L8.5 15.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8.5 1.5L1.5 8.5L8.5 15.5" stroke="#007AFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
     <button class="detail-edit-btn">Edit</button>
   </div>
 
   <div class="detail-header">
-    <div class="detail-avatar-circle">
+    <div class="detail-avatar-circle" id="detail-avatar-circle">
       <div class="detail-avatar-initials" id="detail-initials"></div>
     </div>
     <div class="detail-name" id="detail-name"></div>
@@ -545,10 +496,10 @@ body {
   <div class="glass-card">
     <div class="glass-row">
       <div style="display:flex;align-items:center;gap:10px;flex:1">
-        <div style="width:28px;height:28px;border-radius:50%;background:rgba(100,120,185,0.55);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white" id="poster-initials"></div>
-        <span style="font-size:17px;color:white">Contact Photo &amp; Poster</span>
+        <div style="width:28px;height:28px;border-radius:50%;background:#636366;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white" id="poster-initials"></div>
+        <span style="font-size:17px;color:var(--label)">Contact Photo &amp; Poster</span>
       </div>
-      <svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1 1l6 5.5L1 12" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1 1l6 5.5L1 12" stroke="#C6C6C8" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
   </div>
 
@@ -564,47 +515,59 @@ body {
   <div class="glass-card"><div class="glass-single">Add to Emergency Contacts</div></div>
   <div class="glass-card"><div class="glass-single">Block Contact</div></div>
 
-  <div class="tab-bar">
-    <button class="tab">
-      <div class="tab-icon-wrap">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="13" fill="#2C2C2E"/>
-          <path d="M9.3 13.1c1.2 2.5 3.4 4.6 5.9 5.9l2-2c.2-.2.6-.3.9-.2 1 .4 2.1.6 3.3.6.5 0 .9.4.9.9v3.2c0 .5-.4.9-.9.9C13.3 22.4 6 15.1 6 6.6c0-.5.4-.9.9-.9H10c.5 0 .9.4.9.9 0 1.2.2 2.3.6 3.3.1.3 0 .6-.2.9l-2 2.3z" fill="#8E8E93"/>
-        </svg>
-        <span class="tab-badge" id="calls-badge-detail">241</span>
-      </div>
-      <span class="tab-label">Calls</span>
-    </button>
-    <button class="tab">
-      <div class="tab-icon-wrap">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="11" fill="#007AFF"/>
-          <circle cx="14" cy="11" r="3.5" fill="white"/>
-          <path d="M7 21.5c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="tab-label active">Contacts</span>
-    </button>
-    <button class="tab">
-      <div class="tab-icon-wrap">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle cx="5" cy="5" r="1.8" fill="#8E8E93"/><circle cx="12" cy="5" r="1.8" fill="#8E8E93"/><circle cx="19" cy="5" r="1.8" fill="#8E8E93"/>
-          <circle cx="5" cy="12" r="1.8" fill="#8E8E93"/><circle cx="12" cy="12" r="1.8" fill="#8E8E93"/><circle cx="19" cy="12" r="1.8" fill="#8E8E93"/>
-          <circle cx="5" cy="19" r="1.8" fill="#8E8E93"/><circle cx="12" cy="19" r="1.8" fill="#8E8E93"/><circle cx="19" cy="19" r="1.8" fill="#8E8E93"/>
-        </svg>
-      </div>
-      <span class="tab-label">Keypad</span>
-    </button>
-    <button class="tab">
-      <div class="tab-icon-wrap">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
-          <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="tab-label">Search</span>
-    </button>
-  </div>
+</div>
+
+<!-- Global tab bar — fixed to viewport, outside all animated view containers -->
+<div class="tab-bar">
+  <!-- Calls -->
+  <button class="tab">
+    <div class="tab-icon-wrap">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="13" fill="#2C2C2E"/>
+        <path d="M9.3 13.1c1.2 2.5 3.4 4.6 5.9 5.9l2-2c.2-.2.6-.3.9-.2 1 .4 2.1.6 3.3.6.5 0 .9.4.9.9v3.2c0 .5-.4.9-.9.9C13.3 22.4 6 15.1 6 6.6c0-.5.4-.9.9-.9H10c.5 0 .9.4.9.9 0 1.2.2 2.3.6 3.3.1.3 0 .6-.2.9l-2 2.3z" fill="#8E8E93"/>
+      </svg>
+      <span class="tab-badge" id="calls-badge">241</span>
+    </div>
+    <span class="tab-label">Calls</span>
+  </button>
+  <!-- Contacts (active) -->
+  <button class="tab" id="contacts-tab-list">
+    <div class="tab-icon-wrap">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="11" fill="#007AFF"/>
+        <circle cx="14" cy="11" r="3.5" fill="white"/>
+        <path d="M7 21.5c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="tab-label active">Contacts</span>
+  </button>
+  <!-- Keypad — tap = perf mode on, double-tap = off -->
+  <button class="tab" id="keypad-tab">
+    <div class="tab-icon-wrap">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="5" cy="5" r="1.8" fill="#8E8E93"/>
+        <circle cx="12" cy="5" r="1.8" fill="#8E8E93"/>
+        <circle cx="19" cy="5" r="1.8" fill="#8E8E93"/>
+        <circle cx="5" cy="12" r="1.8" fill="#8E8E93"/>
+        <circle cx="12" cy="12" r="1.8" fill="#8E8E93"/>
+        <circle cx="19" cy="12" r="1.8" fill="#8E8E93"/>
+        <circle cx="5" cy="19" r="1.8" fill="#8E8E93"/>
+        <circle cx="12" cy="19" r="1.8" fill="#8E8E93"/>
+        <circle cx="19" cy="19" r="1.8" fill="#8E8E93"/>
+      </svg>
+    </div>
+    <span class="tab-label">Keypad</span>
+  </button>
+  <!-- Search -->
+  <button class="tab" id="search-tab-list">
+    <div class="tab-icon-wrap">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
+        <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="tab-label">Search</span>
+  </button>
 </div>
 
 <!-- ═══════════════════ SETTINGS VIEW ═══════════════════ -->
@@ -994,6 +957,10 @@ function openContact(c) {
   document.getElementById('detail-name').textContent     = dName(c);
   document.getElementById('detail-initials').textContent = inits(c);
   document.getElementById('poster-initials').textContent = inits(c);
+  const avatarCircle = document.getElementById('detail-avatar-circle');
+  if (avatarCircle) avatarCircle.style.background = c.color || '#636366';
+  const posterInitials = document.getElementById('poster-initials');
+  if (posterInitials) posterInitials.style.background = c.color || '#636366';
   document.getElementById('section-index').style.display = 'none';
 
   const info = document.getElementById('detail-info');
@@ -1106,8 +1073,7 @@ function goBack() {
 //  PERFORMANCE MODE
 // ═══════════════════════════════════════════════════
 function setBadge(val) {
-  document.getElementById('calls-badge').textContent        = val;
-  document.getElementById('calls-badge-detail').textContent = val;
+  document.getElementById('calls-badge').textContent = val;
 }
 
 function setPerfMode(on) {
