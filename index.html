@@ -137,16 +137,14 @@ body {
    DETAIL VIEW
 ═══════════════════════════════════════ */
 #detail-view {
-  display: none; min-height: 100vh; padding-top: env(safe-area-inset-top, 0px); padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  display: none; min-height: 100vh; padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(160deg,#a8b2d8 0%,#8e9cc8 35%,#7280b8 65%,#6070a8 100%);
   overscroll-behavior: none;
 }
 .detail-nav {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px 10px;
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 100;
-  background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border-radius: 0 0 18px 18px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px;
+  position: sticky; top: 0; z-index: 100;
 }
 .detail-back-btn {
   width: 36px; height: 36px; border-radius: 50%;
@@ -1032,13 +1030,60 @@ function openContact(c) {
 }
 
 // ═══════════════════════════════════════════════════
-//  BACK
+//  BACK — shared helpers for animated navigation
 // ═══════════════════════════════════════════════════
+const _nav = {
+  detail: document.getElementById('detail-view'),
+  list:   document.getElementById('list-view'),
+  idx:    document.getElementById('section-index'),
+  prepare(scroll) {
+    const d = this.detail;
+    d.style.position = 'fixed';
+    d.style.top = '0';
+    d.style.left = '0';
+    d.style.width = '100%';
+    d.style.height = '100%';
+    d.style.zIndex = '400';
+    d.style.overflowY = 'auto';
+    d.scrollTop = scroll;
+    d.style.boxShadow = '-5px 0 30px rgba(0,0,0,0.18)';
+    this.list.style.display = 'block';
+    this.idx.style.display = searchQuery ? 'none' : 'flex';
+    window.scrollTo(0, 0);
+  },
+  reset() {
+    const d = this.detail, l = this.list;
+    d.style.position = '';  d.style.top = '';
+    d.style.left = '';      d.style.width = '';
+    d.style.height = '';    d.style.zIndex = '';
+    d.style.overflowY = ''; d.style.transition = '';
+    d.style.transform = ''; d.style.boxShadow = '';
+    l.style.transition = ''; l.style.transform = '';
+  }
+};
+
 function goBack() {
-  document.getElementById('detail-view').style.display = 'none';
-  document.getElementById('list-view').style.display   = 'block';
-  document.getElementById('section-index').style.display = searchQuery ? 'none' : 'flex';
-  window.scrollTo(0,0);
+  _nav.prepare(window.scrollY);
+  _nav.list.style.transform = 'translateX(-80px)';
+
+  const ease = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
+  _nav.detail.style.transition = ease;
+  _nav.list.style.transition = ease;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      _nav.detail.style.transform = 'translateX(100%)';
+      _nav.list.style.transform = 'translateX(0)';
+    });
+  });
+
+  function cleanup() {
+    _nav.detail.removeEventListener('transitionend', cleanup);
+    _nav.detail.style.display = 'none';
+    _nav.reset();
+  }
+  _nav.detail.addEventListener('transitionend', cleanup, {once: true});
+  setTimeout(cleanup, 380);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1415,19 +1460,80 @@ document.getElementById('my-card-row').addEventListener('click', () => {
 });
 
 // ═══════════════════════════════════════════════════
-//  SWIPE RIGHT ON DETAIL VIEW — go back to list
+//  iOS-STYLE EDGE SWIPE ON DETAIL VIEW — go back
 // ═══════════════════════════════════════════════════
-let detailSwipeX = 0, detailSwipeY = 0;
-document.getElementById('detail-view').addEventListener('touchstart', e => {
-  detailSwipeX = e.touches[0].clientX;
-  detailSwipeY = e.touches[0].clientY;
-}, {passive: true});
-document.getElementById('detail-view').addEventListener('touchend', e => {
-  if (!e.changedTouches || !e.changedTouches.length) return;
-  const dx = e.changedTouches[0].clientX - detailSwipeX;
-  const dy = e.changedTouches[0].clientY - detailSwipeY;
-  if (dx > 60 && Math.abs(dy) < 80) goBack();
-}, {passive: true});
+(function() {
+  let active = false, dirLocked = false;
+  let sx = 0, sy = 0, savedScroll = 0;
+
+  _nav.detail.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    sx = t.clientX;
+    sy = t.clientY;
+    dirLocked = false;
+    active = sx <= 30; // edge zone
+  }, {passive: true});
+
+  _nav.detail.addEventListener('touchmove', e => {
+    if (!active) return;
+    const t = e.touches[0];
+    const dx = t.clientX - sx;
+    const dy = t.clientY - sy;
+
+    if (!dirLocked && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+      dirLocked = true;
+      if (Math.abs(dy) > Math.abs(dx)) { active = false; return; }
+      savedScroll = window.scrollY;
+      _nav.prepare(savedScroll);
+    }
+
+    if (dirLocked && active) {
+      const x = Math.max(0, dx);
+      const pct = x / window.innerWidth;
+      _nav.detail.style.transform = 'translateX(' + x + 'px)';
+      _nav.list.style.transform = 'translateX(' + (-80 * (1 - pct)) + 'px)';
+    }
+  }, {passive: true});
+
+  _nav.detail.addEventListener('touchend', e => {
+    if (!active || !dirLocked) { active = false; return; }
+    const dx = (e.changedTouches[0] ? e.changedTouches[0].clientX : sx) - sx;
+    const threshold = window.innerWidth * 0.35;
+
+    if (dx > threshold) {
+      // Complete the back animation
+      const ease = 'transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1)';
+      _nav.detail.style.transition = ease;
+      _nav.list.style.transition = ease;
+      _nav.detail.style.transform = 'translateX(100%)';
+      _nav.list.style.transform = 'translateX(0)';
+      function done() {
+        _nav.detail.removeEventListener('transitionend', done);
+        _nav.detail.style.display = 'none';
+        _nav.reset();
+      }
+      _nav.detail.addEventListener('transitionend', done, {once: true});
+      setTimeout(done, 300);
+    } else {
+      // Snap back
+      const ease = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1)';
+      _nav.detail.style.transition = ease;
+      _nav.list.style.transition = ease;
+      _nav.detail.style.transform = 'translateX(0)';
+      _nav.list.style.transform = 'translateX(-80px)';
+      function snap() {
+        _nav.detail.removeEventListener('transitionend', snap);
+        _nav.list.style.display = 'none';
+        _nav.idx.style.display = 'none';
+        _nav.reset();
+        window.scrollTo(0, savedScroll);
+      }
+      _nav.detail.addEventListener('transitionend', snap, {once: true});
+      setTimeout(snap, 270);
+    }
+    active = false;
+  }, {passive: true});
+})();
 
 // ═══════════════════════════════════════════════════
 //  INIT
