@@ -174,14 +174,21 @@ body {
 }
 .detail-avatar-initials { font-size: 46px; font-weight: 300; color: white; }
 .detail-name { font-size: 28px; font-weight: 700; color: var(--label); text-align: center; letter-spacing: -0.5px; }
-.detail-actions { display: flex; justify-content: center; gap: 16px; padding: 0 20px 20px; }
-.detail-action { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; cursor: pointer; }
+.detail-actions { display: flex; justify-content: center; gap: 12px; padding: 0 16px 24px; }
+.detail-action { display: flex; flex-direction: column; align-items: center; gap: 6px; border: none; background: none; cursor: pointer; min-width: 68px; }
 .detail-action-circle {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: #007AFF;
+  width: 62px; height: 62px; border-radius: 50%;
+  background: rgba(0, 122, 255, 0.13);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 0.5px solid rgba(255,255,255,0.65);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 1px 4px rgba(0,0,0,0.06);
   display: flex; align-items: center; justify-content: center;
 }
-.detail-action-label { font-size: 12px; color: var(--secondary); }
+.detail-action-circle.act-green {
+  background: rgba(52, 199, 89, 0.13);
+}
+.detail-action-label { font-size: 12px; color: var(--secondary); letter-spacing: -0.1px; }
 .glass-card {
   background: #fff;
   border-radius: 12px; margin: 0 16px 12px;
@@ -469,25 +476,38 @@ body {
   <div class="detail-actions">
     <button class="detail-action">
       <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <!-- message.fill (SF Symbol style: rounded speech bubble with tail) -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#007AFF">
+          <path d="M4 2h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H10l-5 5v-5H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+        </svg>
       </div>
       <span class="detail-action-label">message</span>
     </button>
     <button class="detail-action">
-      <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+      <div class="detail-action-circle act-green">
+        <!-- phone.fill (SF Symbol style: phone handset) -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#34C759">
+          <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.25 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.1.35.01.74-.25 1.01L6.6 10.8z"/>
+        </svg>
       </div>
       <span class="detail-action-label">call</span>
     </button>
     <button class="detail-action">
-      <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+      <div class="detail-action-circle act-green">
+        <!-- video.fill (SF Symbol style: video camera) -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#34C759">
+          <path d="M4 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-1.5l4 2.5V8l-4 2.5V8a1 1 0 0 0-1-1H4z"/>
+        </svg>
       </div>
       <span class="detail-action-label">facetime</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7" stroke-linecap="round"/></svg>
+        <!-- envelope.fill (SF Symbol style: filled envelope) -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#007AFF">
+          <path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v.5L12 12.5 2 6.5V6z"/>
+          <path d="M2 9V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9L12 15 2 9z"/>
+        </svg>
       </div>
       <span class="detail-action-label">mail</span>
     </button>
@@ -522,9 +542,9 @@ body {
   <!-- Calls -->
   <button class="tab">
     <div class="tab-icon-wrap">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="13" fill="#2C2C2E"/>
-        <path d="M9.3 13.1c1.2 2.5 3.4 4.6 5.9 5.9l2-2c.2-.2.6-.3.9-.2 1 .4 2.1.6 3.3.6.5 0 .9.4.9.9v3.2c0 .5-.4.9-.9.9C13.3 22.4 6 15.1 6 6.6c0-.5.4-.9.9-.9H10c.5 0 .9.4.9.9 0 1.2.2 2.3.6 3.3.1.3 0 .6-.2.9l-2 2.3z" fill="#8E8E93"/>
+      <!-- phone.fill SF Symbol (no circle background) -->
+      <svg width="26" height="26" viewBox="0 0 24 24">
+        <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.25 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.1.35.01.74-.25 1.01L6.6 10.8z" fill="#8E8E93"/>
       </svg>
       <span class="tab-badge" id="calls-badge">241</span>
     </div>
@@ -533,10 +553,9 @@ body {
   <!-- Contacts (active) -->
   <button class="tab" id="contacts-tab-list">
     <div class="tab-icon-wrap">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="11" fill="#007AFF"/>
-        <circle cx="14" cy="11" r="3.5" fill="white"/>
-        <path d="M7 21.5c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- person.fill SF Symbol (no circle background) -->
+      <svg width="26" height="26" viewBox="0 0 24 24">
+        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z" fill="#007AFF"/>
       </svg>
     </div>
     <span class="tab-label active">Contacts</span>
