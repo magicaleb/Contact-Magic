@@ -33,20 +33,31 @@ body {
 }
 
 /* ═══════════════════════════════════════
-   SHARED: TAB BAR
+   SHARED: TAB BAR — iOS 26 Liquid Glass floating pill
 ═══════════════════════════════════════ */
 .tab-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(249,249,249,0.94);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-top: 0.5px solid var(--sep);
-  display: flex; align-items: flex-start;
-  padding: 10px 0 env(safe-area-inset-bottom, 0px); z-index: 300;
-  height: calc(49px + env(safe-area-inset-bottom, 0px));
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+  left: 12px; right: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.28) 0%,
+    rgba(255,255,255,0.14) 100%
+  );
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 0.5px solid rgba(255,255,255,0.35);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10),
+              0 0.5px 0 rgba(0,0,0,0.02),
+              inset 0 0.5px 0 rgba(255,255,255,0.55);
+  display: flex; align-items: center;
+  padding: 8px 4px;
+  z-index: 300;
+  border-radius: 28px;
 }
 .tab {
   flex: 1; display: flex; flex-direction: column;
-  align-items: center; gap: 3px;
+  align-items: center; gap: 2px;
   cursor: pointer; border: none; background: none;
   padding: 0; position: relative;
 }
@@ -61,7 +72,7 @@ body {
   font-size: 10px; font-weight: 700; line-height: 1;
   border-radius: 9px; padding: 2px 5px;
   min-width: 18px; text-align: center;
-  border: 1.5px solid rgba(249,249,249,0.94);
+  border: 1.5px solid rgba(255,255,255,0.25);
 }
 .tab-label { font-size: 10px; letter-spacing: -0.1px; color: var(--secondary); }
 .tab-label.active { color: var(--blue); }
@@ -69,21 +80,25 @@ body {
 /* ═══════════════════════════════════════
    LIST VIEW
 ═══════════════════════════════════════ */
-#list-view { display: block; padding-top: calc(54px + env(safe-area-inset-top, 0px)); padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: none; background: #fff; }
+#list-view { display: block; padding-top: calc(54px + env(safe-area-inset-top, 0px)); padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: none; background: #fff; }
 
 .list-nav {
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: rgba(249,249,251,0.78);
+  backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
   padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 10px;
-  border-bottom: 0.5px solid var(--sep-light);
+  border-bottom: 0.5px solid rgba(0,0,0,0.08);
 }
 #peek-overlay .list-nav { position: relative; top: auto; left: auto; right: auto; z-index: auto; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .nav-pill-btn {
-  width: 32px; height: 32px; background: #E5E5EA; border-radius: 50%;
+  width: 32px; height: 32px; background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  border: none; cursor: pointer;
+  border: 0.5px solid rgba(255,255,255,0.35);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4);
+  cursor: pointer;
 }
 .list-nav-title {
   font-size: 17px; font-weight: 600; color: var(--label);
@@ -140,23 +155,26 @@ body {
 #detail-view {
   display: none; min-height: 100vh;
   padding-top: calc(60px + env(safe-area-inset-top, 0px));
-  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-  background: #F2F2F7;
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, #C9CDD6 0%, #D6D9E1 12%, #E3E5EC 25%, #EDEEF3 38%, #F2F2F7 55%);
   overscroll-behavior: none;
 }
 .detail-nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px;
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid var(--sep-light);
+  background: rgba(245,245,250,0.5);
+  backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 0.5px solid rgba(255,255,255,0.3);
 }
 .detail-back-btn {
   width: 36px; height: 36px; border-radius: 50%;
-  background: #E5E5EA;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 0.5px solid rgba(255,255,255,0.35);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4);
   display: flex; align-items: center; justify-content: center;
-  border: none; cursor: pointer;
+  cursor: pointer;
 }
 .detail-edit-btn {
   background: none; border-radius: 16px;
@@ -174,21 +192,29 @@ body {
 }
 .detail-avatar-initials { font-size: 46px; font-weight: 300; color: white; }
 .detail-name { font-size: 28px; font-weight: 700; color: var(--label); text-align: center; letter-spacing: -0.5px; }
-.detail-actions { display: flex; justify-content: center; gap: 16px; padding: 0 20px 20px; }
+.detail-actions { display: flex; justify-content: center; gap: 12px; padding: 0 20px 20px; }
 .detail-action { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; cursor: pointer; }
 .detail-action-circle {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: rgba(120,120,128,0.14);
-  border: 0.5px solid rgba(60,60,67,0.12);
+  width: 60px; height: 48px; border-radius: 16px;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 0.5px solid rgba(255,255,255,0.38);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.45),
+              0 1px 4px rgba(0,0,0,0.05);
   display: flex; align-items: center; justify-content: center;
 }
 .detail-action-label { font-size: 12px; color: var(--secondary); }
 .glass-card {
-  background: #fff;
-  border-radius: 12px; margin: 0 16px 12px;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border-radius: 14px; margin: 0 16px 10px;
   overflow: hidden;
+  border: 0.5px solid rgba(255,255,255,0.4);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
-.glass-div { height: 0.5px; background: var(--sep-light); margin: 0; }
+.glass-div { height: 0.5px; background: rgba(60,60,67,0.12); margin: 0; }
 .glass-row { padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; }
 .glass-label { font-size: 13px; color: var(--secondary); margin-bottom: 2px; }
 .glass-value { font-size: 17px; color: var(--label); }
@@ -392,7 +418,7 @@ body {
 #peek-overlay {
   display: none; position: fixed; inset: 0; z-index: 450;
   background: #fff;
-  padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
 }
 </style>
 </head>
@@ -470,25 +496,25 @@ body {
   <div class="detail-actions">
     <button class="detail-action">
       <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#007AFF"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007AFF"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h3v3.5L11.5 18H20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
       </div>
       <span class="detail-action-label">message</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#007AFF"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007AFF"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
       </div>
       <span class="detail-action-label">call</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#007AFF"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007AFF"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
       </div>
       <span class="detail-action-label">facetime</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7" stroke-linecap="round"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007AFF"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
       </div>
       <span class="detail-action-label">mail</span>
     </button>
@@ -500,7 +526,7 @@ body {
         <div style="width:28px;height:28px;border-radius:50%;background:#636366;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white" id="poster-initials"></div>
         <span style="font-size:17px;color:var(--label)">Contact Photo &amp; Poster</span>
       </div>
-      <svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1 1l6 5.5L1 12" stroke="#C6C6C8" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1 1l6 5.5L1 12" stroke="rgba(60,60,67,0.3)" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
   </div>
 
@@ -514,56 +540,59 @@ body {
     <div class="glass-single">Add to Favorites</div>
   </div>
   <div class="glass-card"><div class="glass-single">Add to Emergency Contacts</div></div>
-  <div class="glass-card"><div class="glass-single">Block Contact</div></div>
+  <div class="glass-card"><div class="glass-single" style="color:#FF3B30">Block Contact</div></div>
 
 </div>
 
 <!-- Global tab bar — fixed to viewport, outside all animated view containers -->
 <div class="tab-bar">
-  <!-- Calls -->
+  <!-- Calls — phone.fill SF Symbol -->
   <button class="tab">
     <div class="tab-icon-wrap">
-      <!-- phone.fill SF Symbol (no circle background) -->
-      <svg width="26" height="26" viewBox="0 0 24 24">
-        <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.25 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.1.35.01.74-.25 1.01L6.6 10.8z" fill="#8E8E93"/>
+      <svg width="22" height="22" viewBox="0 0 24 24">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#8E8E93"/>
       </svg>
       <span class="tab-badge" id="calls-badge">241</span>
     </div>
     <span class="tab-label">Calls</span>
   </button>
-  <!-- Contacts (active) -->
+  <!-- Contacts (active) — person.crop.circle.fill SF Symbol -->
   <button class="tab" id="contacts-tab-list">
     <div class="tab-icon-wrap">
-      <!-- person.fill SF Symbol (no circle background) -->
-      <svg width="26" height="26" viewBox="0 0 24 24">
-        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z" fill="#007AFF"/>
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <defs><clipPath id="person-clip"><circle cx="12" cy="12" r="10"/></clipPath></defs>
+        <circle cx="12" cy="12" r="10" fill="#007AFF"/>
+        <g clip-path="url(#person-clip)">
+          <circle cx="12" cy="10" r="3.2" fill="white"/>
+          <circle cx="12" cy="24.5" r="7.5" fill="white"/>
+        </g>
       </svg>
     </div>
     <span class="tab-label active">Contacts</span>
   </button>
-  <!-- Keypad — tap = perf mode on, double-tap = off -->
+  <!-- Keypad — circle.grid.3x3.fill SF Symbol -->
   <button class="tab" id="keypad-tab">
     <div class="tab-icon-wrap">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="5" cy="5" r="1.8" fill="#8E8E93"/>
-        <circle cx="12" cy="5" r="1.8" fill="#8E8E93"/>
-        <circle cx="19" cy="5" r="1.8" fill="#8E8E93"/>
-        <circle cx="5" cy="12" r="1.8" fill="#8E8E93"/>
-        <circle cx="12" cy="12" r="1.8" fill="#8E8E93"/>
-        <circle cx="19" cy="12" r="1.8" fill="#8E8E93"/>
-        <circle cx="5" cy="19" r="1.8" fill="#8E8E93"/>
-        <circle cx="12" cy="19" r="1.8" fill="#8E8E93"/>
-        <circle cx="19" cy="19" r="1.8" fill="#8E8E93"/>
+        <circle cx="5.5" cy="5.5" r="2.4" fill="#8E8E93"/>
+        <circle cx="12" cy="5.5" r="2.4" fill="#8E8E93"/>
+        <circle cx="18.5" cy="5.5" r="2.4" fill="#8E8E93"/>
+        <circle cx="5.5" cy="12" r="2.4" fill="#8E8E93"/>
+        <circle cx="12" cy="12" r="2.4" fill="#8E8E93"/>
+        <circle cx="18.5" cy="12" r="2.4" fill="#8E8E93"/>
+        <circle cx="5.5" cy="18.5" r="2.4" fill="#8E8E93"/>
+        <circle cx="12" cy="18.5" r="2.4" fill="#8E8E93"/>
+        <circle cx="18.5" cy="18.5" r="2.4" fill="#8E8E93"/>
       </svg>
     </div>
     <span class="tab-label">Keypad</span>
   </button>
-  <!-- Search -->
+  <!-- Search — magnifyingglass SF Symbol -->
   <button class="tab" id="search-tab-list">
     <div class="tab-icon-wrap">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="11" cy="11" r="7.5" stroke="#8E8E93" stroke-width="1.8"/>
-        <path d="m21 21-4.5-4.5" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="10.5" cy="10.5" r="6.5" stroke="#8E8E93" stroke-width="2"/>
+        <path d="M15.5 15.5L21 21" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </div>
     <span class="tab-label">Search</span>
@@ -961,6 +990,12 @@ function openContact(c) {
   if (avatarCircle) avatarCircle.style.background = c.color || '#636366';
   const posterInitials = document.getElementById('poster-initials');
   if (posterInitials) posterInitials.style.background = c.color || '#636366';
+
+  // Tint detail gradient with contact's color (iOS 26 style)
+  const detailView = document.getElementById('detail-view');
+  const clr = c.color || '#636366';
+  detailView.style.background = `linear-gradient(180deg, ${clr}30 0%, ${clr}18 15%, #EDEEF3 32%, #F2F2F7 52%)`;
+
   document.getElementById('section-index').style.display = 'none';
 
   const info = document.getElementById('detail-info');
