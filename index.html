@@ -1561,8 +1561,8 @@ setBadge('241');
 // ── Register Service Worker ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
-      .catch(err => console.log('SW registration failed:', err));
+    navigator.serviceWorker.register('service-worker.js', { scope: '/Contact-Magic/' })
+      .catch(err => console.warn('SW registration failed:', err));
   });
 }
 </script>
