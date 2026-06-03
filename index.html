@@ -1597,6 +1597,9 @@ function handleMyCardPhotoUpload(input) {
     _mcEditPhoto = e.target.result;
     _refreshMcEditAvatar();
   };
+  reader.onerror = () => {
+    alert('Unable to read the selected image. Please try a different file.');
+  };
   reader.readAsDataURL(file);
   // Reset input so the same file can be re-selected if needed
   input.value = '';
