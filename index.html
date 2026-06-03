@@ -415,6 +415,81 @@ body {
   font-size: 17px; color: #8E8E93;
 }
 
+/* ═══════════════════════════════════════
+   MY CARD EDIT SHEET
+═══════════════════════════════════════ */
+#mc-edit-sheet {
+  display: none;
+  position: fixed; inset: 0; z-index: 600;
+  background: #F2F2F7; overflow-y: auto;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.mc-edit-nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: rgba(242,242,247,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid rgba(60,60,67,0.2);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 12px;
+}
+.mc-edit-nav-title { font-size: 17px; font-weight: 600; color: var(--label); }
+.mc-edit-nav-btn {
+  font-size: 17px; color: #007AFF; background: none;
+  border: none; cursor: pointer; padding: 4px 0;
+}
+.mc-edit-nav-btn.bold { font-weight: 600; }
+.mc-edit-photo-section {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 16px 20px;
+}
+.mc-edit-avatar {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: #636366;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; font-weight: 300; color: white;
+  overflow: hidden; cursor: pointer; flex-shrink: 0;
+  background-size: cover; background-position: center;
+  position: relative;
+}
+.mc-edit-avatar-overlay {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: rgba(0,0,0,0.28);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s;
+}
+.mc-edit-avatar:active .mc-edit-avatar-overlay { opacity: 1; }
+.mc-edit-avatar-overlay svg { display: block; }
+.mc-edit-photo-btn {
+  margin-top: 10px; font-size: 15px; color: #007AFF;
+  background: none; border: none; cursor: pointer; padding: 4px 0;
+}
+.mc-edit-section-label {
+  font-size: 13px; font-weight: 400; color: #8E8E93;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 8px 20px 6px;
+}
+.mc-edit-card {
+  background: white; border-radius: 12px; margin: 0 16px 10px;
+  overflow: hidden;
+  border: 0.5px solid rgba(60,60,67,0.1);
+}
+.mc-edit-row {
+  display: flex; align-items: center;
+  padding: 12px 16px; gap: 12px;
+  border-top: 0.5px solid rgba(60,60,67,0.1); min-height: 44px;
+}
+.mc-edit-row:first-child { border-top: none; }
+.mc-edit-row-label {
+  font-size: 17px; color: var(--label); min-width: 68px; flex-shrink: 0;
+}
+.mc-edit-row input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 17px; color: var(--label); text-align: right;
+  font-family: -apple-system, sans-serif;
+}
+.mc-edit-row input::placeholder { color: #C7C7CC; }
+
 /* Profile photo in settings */
 .sv-photo-btn {
   background: #2C2C2E; color: #007AFF; border: none;
@@ -545,7 +620,7 @@ body {
         <path d="M8.5 1.5L1.5 8.5L8.5 15.5" stroke="#007AFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <button class="detail-edit-btn">Edit</button>
+    <button class="detail-edit-btn" id="detail-edit-btn" style="display:none" onclick="openMyCardEdit()">Edit</button>
   </div>
 
   <div class="detail-header">
@@ -608,6 +683,51 @@ body {
   <div class="glass-card"><div class="glass-single">Add to Emergency Contacts</div></div>
   <div class="glass-card"><div class="glass-single" style="color:#FF3B30">Block Contact</div></div>
 
+</div>
+
+<!-- ═══════════════════ MY CARD EDIT SHEET ═══════════════════ -->
+<div id="mc-edit-sheet">
+  <div class="mc-edit-nav">
+    <button class="mc-edit-nav-btn" onclick="closeMyCardEdit()">Cancel</button>
+    <span class="mc-edit-nav-title">Edit Card</span>
+    <button class="mc-edit-nav-btn bold" onclick="saveMyCardEdit()">Done</button>
+  </div>
+
+  <div class="mc-edit-photo-section">
+    <div class="mc-edit-avatar" id="mc-edit-avatar" onclick="document.getElementById('mc-edit-photo-input').click()">
+      <div class="mc-edit-avatar-overlay">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>
+      </div>
+    </div>
+    <button class="mc-edit-photo-btn" onclick="document.getElementById('mc-edit-photo-input').click()">
+      Change Photo
+    </button>
+    <input type="file" id="mc-edit-photo-input" accept="image/*" style="display:none" onchange="handleMyCardPhotoUpload(this)">
+  </div>
+
+  <div class="mc-edit-section-label">Name</div>
+  <div class="mc-edit-card">
+    <div class="mc-edit-row">
+      <label class="mc-edit-row-label" for="mc-edit-first">First</label>
+      <input type="text" id="mc-edit-first" placeholder="First name" autocomplete="given-name" autocorrect="off">
+    </div>
+    <div class="mc-edit-row">
+      <label class="mc-edit-row-label" for="mc-edit-last">Last</label>
+      <input type="text" id="mc-edit-last" placeholder="Last name" autocomplete="family-name" autocorrect="off">
+    </div>
+  </div>
+
+  <div class="mc-edit-section-label">Contact Info</div>
+  <div class="mc-edit-card">
+    <div class="mc-edit-row">
+      <label class="mc-edit-row-label" for="mc-edit-phone">Phone</label>
+      <input type="tel" id="mc-edit-phone" placeholder="(000) 000-0000" inputmode="numeric" oninput="formatPhoneInput(this)">
+    </div>
+    <div class="mc-edit-row">
+      <label class="mc-edit-row-label" for="mc-edit-email">Email</label>
+      <input type="email" id="mc-edit-email" placeholder="email@example.com" autocomplete="email" autocorrect="off" autocapitalize="none">
+    </div>
+  </div>
 </div>
 
 <!-- Global tab bar — fixed to viewport, outside all animated view containers -->
@@ -795,6 +915,7 @@ let pickCount = 0;
 let perfMode  = false;
 let searchQuery = '';
 let lockedContact = null; // { name } set when perf mode search narrows to 1
+let isMyCard = false; // true when detail view is showing the user's own My Card
 
 let SEQUENCE = [
   { phone:"(312) 555-0147", phoneLabel:"mobile", email:"info@example.com", birthday:"March 14", address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
@@ -1036,7 +1157,7 @@ function makeContactRow(c) {
     <div class="avatar" style="background:${c.color}">${inits(c)}</div>
     <div class="contact-name">${nameHtml}</div>
   `;
-  row.addEventListener('click', ()=>openContact(c));
+  row.addEventListener('click', () => { isMyCard = false; openContact(c); });
   return row;
 }
 
@@ -1119,6 +1240,22 @@ function openContact(c) {
   if (avatarCircle) avatarCircle.style.background = c.color || '#636366';
   const posterInitials = document.getElementById('poster-initials');
   if (posterInitials) posterInitials.style.background = c.color || '#636366';
+
+  // Show user's photo in avatar if this is My Card
+  const detailInitialsEl = document.getElementById('detail-initials');
+  if (isMyCard && myPhoto) {
+    avatarCircle.style.backgroundImage    = `url(${myPhoto})`;
+    avatarCircle.style.backgroundSize     = 'cover';
+    avatarCircle.style.backgroundPosition = 'center';
+    if (detailInitialsEl) detailInitialsEl.style.display = 'none';
+  } else {
+    avatarCircle.style.backgroundImage = '';
+    if (detailInitialsEl) detailInitialsEl.style.display = '';
+  }
+
+  // Show Edit button only on My Card
+  const editBtn = document.getElementById('detail-edit-btn');
+  if (editBtn) editBtn.style.display = isMyCard ? '' : 'none';
 
   // Tint detail gradient with contact's color (iOS 26 style)
   const detailView = document.getElementById('detail-view');
@@ -1210,6 +1347,7 @@ const _nav = {
 };
 
 function goBack() {
+  isMyCard = false;
   _nav.prepare(window.scrollY);
 
   const ease = 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)';
@@ -1404,6 +1542,104 @@ function svSeedPreview(n) {
   } else {
     el.textContent = '';
   }
+}
+
+// ═══════════════════════════════════════════════════
+//  MY CARD EDIT SHEET
+// ═══════════════════════════════════════════════════
+let _mcEditPhoto = null; // temp photo during edit session
+
+function openMyCardEdit() {
+  const sheet = document.getElementById('mc-edit-sheet');
+  if (!sheet) return;
+
+  // Split current name into first/last for editing
+  const parts = myName.trim().split(' ');
+  const first = parts.length > 1 ? parts.slice(0, -1).join(' ') : myName.trim();
+  const last  = parts.length > 1 ? parts[parts.length - 1] : '';
+
+  document.getElementById('mc-edit-first').value = first;
+  document.getElementById('mc-edit-last').value  = last;
+  document.getElementById('mc-edit-phone').value = myPhone;
+  document.getElementById('mc-edit-email').value = myEmail;
+
+  // Populate avatar with current photo or initials
+  _mcEditPhoto = myPhoto;
+  _refreshMcEditAvatar();
+
+  sheet.style.display = 'block';
+  sheet.scrollTop = 0;
+}
+
+function _refreshMcEditAvatar() {
+  const avatar = document.getElementById('mc-edit-avatar');
+  if (!avatar) return;
+  const parts = myName.trim().split(' ');
+  const initsStr = parts.length > 1
+    ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+    : myName.substring(0, 2).toUpperCase();
+  if (_mcEditPhoto) {
+    avatar.style.backgroundImage    = `url(${_mcEditPhoto})`;
+    avatar.style.backgroundSize     = 'cover';
+    avatar.style.backgroundPosition = 'center';
+    avatar.textContent = '';
+  } else {
+    avatar.style.backgroundImage = '';
+    avatar.textContent = initsStr;
+  }
+}
+
+function handleMyCardPhotoUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _mcEditPhoto = e.target.result;
+    _refreshMcEditAvatar();
+  };
+  reader.readAsDataURL(file);
+  // Reset input so the same file can be re-selected if needed
+  input.value = '';
+}
+
+function closeMyCardEdit() {
+  const sheet = document.getElementById('mc-edit-sheet');
+  if (sheet) sheet.style.display = 'none';
+  _mcEditPhoto = null;
+}
+
+function saveMyCardEdit() {
+  const first = document.getElementById('mc-edit-first').value.trim();
+  const last  = document.getElementById('mc-edit-last').value.trim();
+  const phone = document.getElementById('mc-edit-phone').value.trim();
+  const email = document.getElementById('mc-edit-email').value.trim();
+
+  const newName = [first, last].filter(Boolean).join(' ') || myName;
+  myName  = newName;
+  myPhone = phone;
+  myEmail = email;
+  myPhoto = _mcEditPhoto;
+
+  try {
+    localStorage.setItem('mc_v2', JSON.stringify({seq:SEQUENCE, myName, myPhone, myEmail, myPhoto}));
+  } catch(e){}
+
+  closeMyCardEdit();
+
+  // Refresh the detail view to reflect saved changes
+  const nameParts = myName.trim().split(' ');
+  const myFirst = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '';
+  const myLast  = nameParts.length > 1 ? nameParts[nameParts.length - 1] : myName.trim();
+  const c = { first: myFirst, last: myLast, color: '#636366',
+              phone: myPhone || '', email: myEmail || '',
+              birthday: myPhone ? phoneToBirthday(myPhone) : '' };
+  const savedPerf = perfMode;
+  perfMode = false;
+  isMyCard = true;
+  openContact(c);
+  perfMode = savedPerf;
+
+  renderList();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1647,6 +1883,7 @@ document.getElementById('my-card-row').addEventListener('click', () => {
               birthday: myPhone ? phoneToBirthday(myPhone) : '' };
   const savedPerf = perfMode;
   perfMode = false;
+  isMyCard = true;
   openContact(c);
   perfMode = savedPerf;
 });
@@ -1702,6 +1939,7 @@ document.getElementById('my-card-row').addEventListener('click', () => {
       function done() {
         _nav.detail.removeEventListener('transitionend', done);
         _nav.detail.style.display = 'none';
+        isMyCard = false;
         _nav.reset();
         window.scrollTo(0, 0);
       }
