@@ -21,6 +21,8 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   --label: #000;
   --secondary: #8E8E93;
   --bg: #F2F2F7;
+  --card-fill: rgba(255,255,255,0.68);
+  --glass-stroke: rgba(255,255,255,0.56);
 }
 
 body {
@@ -28,8 +30,10 @@ body {
   background: #fff;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
   overscroll-behavior-y: none;
+  touch-action: pan-y;
 }
 
 /* ═══════════════════════════════════════
@@ -37,23 +41,21 @@ body {
 ═══════════════════════════════════════ */
 .tab-bar {
   position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
-  left: 12px; right: 12px;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.32) 0%,
-    rgba(255,255,255,0.18) 100%
-  );
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 0.5px solid rgba(255,255,255,0.40);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08),
-              0 0.5px 0 rgba(0,0,0,0.02),
-              inset 0 0.5px 0 rgba(255,255,255,0.60);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 7px);
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  background: linear-gradient(160deg, rgba(255,255,255,0.52), rgba(255,255,255,0.24));
+  backdrop-filter: blur(30px) saturate(210%);
+  -webkit-backdrop-filter: blur(30px) saturate(210%);
+  border: 0.5px solid rgba(255,255,255,0.52);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12),
+              0 1px 0 rgba(0,0,0,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.72),
+              inset 0 -0.5px 0 rgba(60,60,67,0.10);
   display: flex; align-items: center;
-  padding: 8px 4px;
+  padding: 7px 4px 8px;
   z-index: 300;
-  border-radius: 28px;
+  border-radius: 30px;
 }
 .tab {
   flex: 1; display: flex; flex-direction: column;
@@ -83,12 +85,13 @@ body {
 #list-view { display: block; padding-top: calc(54px + env(safe-area-inset-top, 0px)); padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: none; background: #fff; }
 
 .list-nav {
-  background: rgba(249,249,251,0.78);
-  backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
+  background: rgba(249,249,251,0.72);
+  backdrop-filter: blur(44px) saturate(190%); -webkit-backdrop-filter: blur(44px) saturate(190%);
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 10px;
-  border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 10px;
+  border-bottom: 0.5px solid rgba(60,60,67,0.10);
+  box-shadow: 0 0.5px 0 rgba(255,255,255,0.5) inset;
 }
 #peek-overlay .list-nav { position: relative; top: auto; left: auto; right: auto; z-index: auto; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .nav-pill-btn {
@@ -110,6 +113,7 @@ body {
   padding: 12px 20px; gap: 14px;
   border-bottom: 0.5px solid var(--sep-light);
   background: #fff;
+  min-height: 70px;
 }
 .my-card-avatar {
   width: 46px; height: 46px; border-radius: 50%; background: #636366;
@@ -127,14 +131,16 @@ body {
 .contact-row {
   display: flex; align-items: center;
   padding: 9px 20px; gap: 14px;
-  border-bottom: 0.5px solid var(--sep-light);
+  border-bottom: 0.5px solid rgba(60,60,67,0.12);
   cursor: pointer; background: white; user-select: none;
+  min-height: 64px;
 }
 .contact-row:active { background: #F2F2F7; }
 .avatar {
   width: 46px; height: 46px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px; font-weight: 500; color: white; flex-shrink: 0;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.25), 0 1px 2px rgba(0,0,0,0.08);
 }
 .contact-name { font-size: 17px; color: var(--label); }
 .contact-name .bold { font-weight: 600; }
@@ -200,26 +206,28 @@ body {
 }
 .detail-action-circle {
   width: 100%; height: 52px; border-radius: 22px;
-  background: rgba(255,255,255,0.38);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
-  border: 1px solid rgba(255,255,255,0.50);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.60),
-              inset 0 -0.5px 0 rgba(0,0,0,0.03),
+  color: var(--blue);
+  background: rgba(255,255,255,0.54);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.62);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72),
+              inset 0 -0.5px 0 rgba(60,60,67,0.06),
               0 1px 3px rgba(0,0,0,0.06),
-              0 4px 12px rgba(0,0,0,0.04);
+              0 8px 18px rgba(0,0,0,0.05);
   display: flex; align-items: center; justify-content: center;
 }
 .detail-action-label { font-size: 11px; color: var(--secondary); letter-spacing: -0.1px; }
 .glass-card {
-  background: rgba(255,255,255,0.62);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-radius: 14px; margin: 0 16px 10px;
+  background: var(--card-fill);
+  backdrop-filter: blur(42px) saturate(190%);
+  -webkit-backdrop-filter: blur(42px) saturate(190%);
+  border-radius: 16px; margin: 0 16px 10px;
   overflow: hidden;
-  border: 0.5px solid rgba(255,255,255,0.55);
+  border: 0.5px solid var(--glass-stroke);
   box-shadow: 0 0.5px 2px rgba(0,0,0,0.04),
-              0 2px 8px rgba(0,0,0,0.03);
+              0 6px 18px rgba(0,0,0,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.56);
 }
 .glass-div { height: 0.5px; background: rgba(60,60,67,0.12); margin: 0; }
 .glass-row { padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; }
@@ -421,6 +429,53 @@ body {
   background-size: cover; background-position: center;
 }
 
+
+
+/* Secret help page */
+#help-view {
+  display: none;
+  position: fixed; inset: 0; z-index: 560;
+  background: #F2F2F7;
+  color: var(--label);
+  overflow-y: auto;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.help-nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: rgba(249,249,251,0.78);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  border-bottom: 0.5px solid rgba(60,60,67,0.12);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 20px 11px;
+}
+.help-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.help-btn { font-size: 17px; color: var(--blue); background: none; border: none; cursor: pointer; }
+.help-hero { padding: 22px 20px 10px; }
+.help-hero h1 { font-size: 30px; line-height: 1.05; letter-spacing: -0.8px; margin-bottom: 6px; }
+.help-hero p { font-size: 15px; color: var(--secondary); line-height: 1.35; }
+.help-section-label {
+  font-size: 13px; color: var(--secondary); text-transform: uppercase;
+  letter-spacing: 0.4px; padding: 20px 20px 8px;
+}
+.help-card {
+  margin: 0 16px 10px; border-radius: 16px; overflow: hidden;
+  background: rgba(255,255,255,0.82);
+  border: 0.5px solid rgba(255,255,255,0.8);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 8px 22px rgba(0,0,0,0.04);
+}
+.help-row { padding: 14px 16px; border-top: 0.5px solid rgba(60,60,67,0.12); }
+.help-row:first-child { border-top: none; }
+.help-row h2 { font-size: 17px; letter-spacing: -0.25px; margin-bottom: 4px; }
+.help-row p, .help-row li { font-size: 15px; color: #3A3A3C; line-height: 1.38; }
+.help-row ul { padding-left: 19px; margin-top: 6px; }
+.help-kbd {
+  display: inline-block; padding: 2px 7px; border-radius: 7px;
+  background: rgba(120,120,128,0.14); color: #1C1C1E;
+  font-size: 13px; font-weight: 600;
+}
+
 /* Peek overlay */
 #peek-overlay {
   display: none; position: fixed; inset: 0; z-index: 450;
@@ -504,28 +559,28 @@ body {
     <button class="detail-action">
       <div class="detail-action-circle">
         <!-- SF Symbol: message.fill — oval speech bubble with bottom-left tail -->
-        <svg width="24" height="22" viewBox="0 0 24 22" fill="white"><path d="M12 2C6 2 1 5.48 1 10C1 12.6 2.3 14.9 4.5 16.4L3 21L7.5 17.2C9 17.7 10.5 18 12 18C18 18 23 14.52 23 10C23 5.48 18 2 12 2Z"/></svg>
+        <svg width="24" height="22" viewBox="0 0 24 22" fill="currentColor"><path d="M12 2C6 2 1 5.48 1 10C1 12.6 2.3 14.9 4.5 16.4L3 21L7.5 17.2C9 17.7 10.5 18 12 18C18 18 23 14.52 23 10C23 5.48 18 2 12 2Z"/></svg>
       </div>
       <span class="detail-action-label">message</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
         <!-- SF Symbol: phone.fill — bold filled telephone handset silhouette -->
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path stroke="white" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
       </div>
       <span class="detail-action-label">call</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
         <!-- SF Symbol: video.fill — rounded camera body + right-pointing viewfinder triangle -->
-        <svg width="24" height="17" viewBox="0 0 24 17" fill="white"><path d="M0 3C0 1.34 1.34 0 3 0H13.5C15.16 0 16.5 1.34 16.5 3V5.5L23 2V15L16.5 11.5V14C16.5 15.66 15.16 17 13.5 17H3C1.34 17 0 15.66 0 14V3Z"/></svg>
+        <svg width="24" height="17" viewBox="0 0 24 17" fill="currentColor"><path d="M0 3C0 1.34 1.34 0 3 0H13.5C15.16 0 16.5 1.34 16.5 3V5.5L23 2V15L16.5 11.5V14C16.5 15.66 15.16 17 13.5 17H3C1.34 17 0 15.66 0 14V3Z"/></svg>
       </div>
       <span class="detail-action-label">facetime</span>
     </button>
     <button class="detail-action">
       <div class="detail-action-circle">
         <!-- SF Symbol: envelope.fill — sealed envelope with V-fold -->
-        <svg width="24" height="18" viewBox="0 0 24 18" fill="white"><path d="M21 0H3C1.34 0 0 1.34 0 3V3.6L12 9.5 24 3.6V3C24 1.34 22.66 0 21 0ZM0 5.8V15C0 16.66 1.34 18 3 18H21C22.66 18 24 16.66 24 15V5.8L12 11.7 0 5.8Z"/></svg>
+        <svg width="24" height="18" viewBox="0 0 24 18" fill="currentColor"><path d="M21 0H3C1.34 0 0 1.34 0 3V3.6L12 9.5 24 3.6V3C24 1.34 22.66 0 21 0ZM0 5.8V15C0 16.66 1.34 18 3 18H21C22.66 18 24 16.66 24 15V5.8L12 11.7 0 5.8Z"/></svg>
       </div>
       <span class="detail-action-label">mail</span>
     </button>
@@ -667,6 +722,69 @@ body {
   <div id="sv-sequence-fields"></div>
 
   <div style="height:20px"></div>
+</div>
+
+
+
+<!-- ═══════════════════ SECRET HELP VIEW ═══════════════════ -->
+<div id="help-view" aria-hidden="true">
+  <div class="help-nav">
+    <button class="help-btn" onclick="closeHelp()">Done</button>
+    <span class="help-title">Secret Help</span>
+    <button class="help-btn" onclick="openSettingsFromHelp()">Setup</button>
+  </div>
+  <div class="help-hero">
+    <h1>Contact Magic</h1>
+    <p>Private performer notes for the Contacts-style magic app. Close this before handing the phone to a spectator.</p>
+  </div>
+
+  <div class="help-section-label">Performance Flow</div>
+  <div class="help-card">
+    <div class="help-row">
+      <h2>1. Arm performance mode</h2>
+      <p>Single tap the <span class="help-kbd">Keypad</span> tab. The Calls badge changes from <strong>241</strong> to <strong>242</strong>, which is your silent cue that forced data is active.</p>
+    </div>
+    <div class="help-row">
+      <h2>2. Let them choose a contact</h2>
+      <p>Any contact opened while performance mode is on receives the next forced data set from Trick Setup. Each opened contact advances the pick counter by one.</p>
+    </div>
+    <div class="help-row">
+      <h2>3. Turn performance mode off</h2>
+      <p>Double tap the <span class="help-kbd">Keypad</span> tab. The Calls badge returns to <strong>241</strong>, and contacts show their normal dummy information again.</p>
+    </div>
+  </div>
+
+  <div class="help-section-label">Secret Controls</div>
+  <div class="help-card">
+    <div class="help-row">
+      <h2>Open this page</h2>
+      <p>Swipe down with two fingers anywhere in the visible app. This replaces the old two-finger shortcut so you can quickly remember the routine.</p>
+    </div>
+    <div class="help-row">
+      <h2>Open Trick Setup</h2>
+      <p>Double tap the centered <span class="help-kbd">Contacts</span> title, or tap <span class="help-kbd">Setup</span> at the top of this page.</p>
+    </div>
+    <div class="help-row">
+      <h2>Peek locked search choice</h2>
+      <p>In performance mode, type in Search until only one to three last-name matches remain. The top match locks and the Calls badge becomes <strong>3</strong>. Long-press the <span class="help-kbd">Contacts</span> tab to temporarily reveal the locked contact; release to hide it.</p>
+    </div>
+  </div>
+
+  <div class="help-section-label">Setup Notes</div>
+  <div class="help-card">
+    <div class="help-row">
+      <h2>Forced sequences</h2>
+      <p>Trick Setup stores Pick 1, Pick 2, and Pick 3. The next forced phone number, email, birthday, company, address, and notes are displayed on the chosen contact detail page.</p>
+    </div>
+    <div class="help-row">
+      <h2>Magic Number option</h2>
+      <p>Turn on Magic Number for a pick, enter two seed digits, and the app generates a ten-digit phone number by repeatedly adding the previous two digits modulo 10. The birthday auto-fills from the final phone digits.</p>
+    </div>
+    <div class="help-row">
+      <h2>Resetting</h2>
+      <p>Use <span class="help-kbd">Reset Pick Counter to Zero</span> in Trick Setup before a repeat performance. Turning performance mode on also resets the pick counter.</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1309,6 +1427,29 @@ function handlePhotoUpload(input) {
   reader.readAsDataURL(file);
 }
 
+
+function openHelp() {
+  const help = document.getElementById('help-view');
+  if (!help) return;
+  closeSettings();
+  endPeek();
+  help.style.display = 'block';
+  help.setAttribute('aria-hidden', 'false');
+  help.scrollTop = 0;
+}
+
+function closeHelp() {
+  const help = document.getElementById('help-view');
+  if (!help) return;
+  help.style.display = 'none';
+  help.setAttribute('aria-hidden', 'true');
+}
+
+function openSettingsFromHelp() {
+  closeHelp();
+  openSettings();
+}
+
 // ═══════════════════════════════════════════════════
 //  SETTINGS OPEN / CLOSE / SAVE
 // ═══════════════════════════════════════════════════
@@ -1443,7 +1584,7 @@ contactsTabEl.addEventListener('mouseleave', () => {
 });
 
 // ═══════════════════════════════════════════════════
-//  SECRET TRIGGERS — open settings
+//  SECRET TRIGGERS — open help and setup
 // ═══════════════════════════════════════════════════
 let titleLastTap = 0;
 document.getElementById('contacts-title').addEventListener('click', () => {
@@ -1452,17 +1593,40 @@ document.getElementById('contacts-title').addEventListener('click', () => {
   titleLastTap = now;
 });
 
-let touchStart = 0, touchFingers = 0;
-document.getElementById('list-view').addEventListener('touchstart', e => {
-  touchFingers = e.touches.length;
-  if (touchFingers === 2) touchStart = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+let secretSwipeStartY = 0;
+let secretSwipeStartX = 0;
+let secretSwipeArmed = false;
+
+document.addEventListener('touchstart', e => {
+  if (e.touches.length !== 2) return;
+  const helpOpen = document.getElementById('help-view')?.style.display === 'block';
+  const settingsOpen = document.getElementById('settings-view')?.style.display === 'block';
+  if (helpOpen || settingsOpen) return;
+  secretSwipeArmed = true;
+  secretSwipeStartY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+  secretSwipeStartX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
 }, {passive:true});
-document.getElementById('list-view').addEventListener('touchend', e => {
-  if (touchFingers === 2) {
-    const endY = e.changedTouches[0]?.clientY || 0;
-    if (endY - touchStart > 55) openSettings();
+
+document.addEventListener('touchend', e => {
+  if (!secretSwipeArmed) return;
+  if (e.touches.length > 0) return;
+  secretSwipeArmed = false;
+  if (e.changedTouches.length < 1) return;
+  let endY = 0;
+  let endX = 0;
+  for (const touch of e.changedTouches) {
+    endY += touch.clientY;
+    endX += touch.clientX;
   }
-  touchFingers = 0;
+  endY /= e.changedTouches.length;
+  endX /= e.changedTouches.length;
+  const dy = endY - secretSwipeStartY;
+  const dx = Math.abs(endX - secretSwipeStartX);
+  if (dy > 60 && dx < 90) openHelp();
+}, {passive:true});
+
+document.addEventListener('touchcancel', () => {
+  secretSwipeArmed = false;
 }, {passive:true});
 
 // ═══════════════════════════════════════════════════
@@ -1565,10 +1729,25 @@ document.getElementById('my-card-row').addEventListener('click', () => {
 })();
 
 // ═══════════════════════════════════════════════════
+//  PREVIEW HASHES — desktop-friendly performer/developer preview
+// ═══════════════════════════════════════════════════
+function applyPreviewHash() {
+  const hash = window.location.hash.toLowerCase();
+  if (hash === '#help') {
+    openHelp();
+  } else if (hash === '#setup' || hash === '#settings') {
+    openSettings();
+  }
+}
+
+window.addEventListener('hashchange', applyPreviewHash);
+
+// ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
 renderList();
 setBadge('241');
+applyPreviewHash();
 
 // ── Register Service Worker ──
 if ('serviceWorker' in navigator) {
