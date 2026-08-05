@@ -29,6 +29,9 @@ Any time you push changes to GitHub, the live app updates automatically within a
 
 ## Secret controls (reminder)
 
-- **Open settings:** Double-tap "Contacts" title, or two-finger swipe down
+- **Open secret help:** Two-finger swipe down anywhere in the visible app
+- **Preview secret help without a touch gesture:** Open the app URL with `#help` at the end
+- **Open settings:** Double-tap "Contacts" title, tap Setup from the secret help page, or open the app URL with `#setup`
 - **Performance mode ON:** Single tap Keypad tab (badge shows 242)
 - **Performance mode OFF:** Double tap Keypad tab (badge shows 241)
+- **Peek locked search choice:** Long-press Contacts tab after search locks a contact (badge shows 3)
