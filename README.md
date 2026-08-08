@@ -34,4 +34,6 @@ Any time you push changes to GitHub, the live app updates automatically within a
 - **Open settings:** Double-tap "Contacts" title, tap Setup from the secret help page, or open the app URL with `#setup`
 - **Performance mode ON:** Single tap Keypad tab (badge shows 242)
 - **Performance mode OFF:** Double tap Keypad tab (badge shows 241)
-- **Peek locked search choice:** Long-press Contacts tab after search locks a contact (badge shows 3)
+- **Three-digit routine:** In performance mode, Search accepts three digits and shows the configured Round 1 or Round 2 contacts
+- **Peek a choice:** After a result is opened, the first and last initials of the top contact rows spell the selected name
+- **Optional tab peek:** Trick Setup can also show the selected first name in the bottom Contacts label
