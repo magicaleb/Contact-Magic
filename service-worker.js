@@ -1,4 +1,4 @@
-const CACHE = 'magic-contacts-v5';
+const CACHE = 'magic-contacts-v6';
 const BASE = '/Contact-Magic';
 const ASSETS = [
   BASE + '/',

@@ -93,16 +93,30 @@ body {
   border-bottom: 0.5px solid rgba(60,60,67,0.10);
   box-shadow: 0 0.5px 0 rgba(255,255,255,0.5) inset;
 }
-#peek-overlay .list-nav { position: relative; top: auto; left: auto; right: auto; z-index: auto; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .nav-pill-btn {
-  width: 32px; height: 32px; background: rgba(255,255,255,0.28);
-  backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%);
+  width: 34px; height: 34px;
+  position: relative; overflow: hidden;
+  color: var(--blue);
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,0.92), rgba(255,255,255,0.30) 42%, rgba(255,255,255,0.14) 72%),
+    linear-gradient(145deg, rgba(255,255,255,0.56), rgba(232,241,255,0.22));
+  backdrop-filter: blur(22px) saturate(220%); -webkit-backdrop-filter: blur(22px) saturate(220%);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  border: 0.5px solid rgba(255,255,255,0.35);
-  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4);
+  border: 0.5px solid rgba(255,255,255,0.76);
+  box-shadow: 0 4px 12px rgba(24,74,130,0.10),
+              inset 0 1px 0 rgba(255,255,255,0.96),
+              inset 0 -1px 0 rgba(0,80,170,0.08);
   cursor: pointer;
+  transition: transform 0.14s ease, background 0.14s ease;
 }
+.nav-pill-btn::after {
+  content: ''; position: absolute; inset: 1px 5px auto; height: 42%;
+  border-radius: 50%; pointer-events: none;
+  background: linear-gradient(rgba(255,255,255,0.54), rgba(255,255,255,0));
+}
+.nav-pill-btn:active { transform: scale(0.92); }
+.nav-pill-btn svg { position: relative; z-index: 1; }
 .list-nav-title {
   font-size: 17px; font-weight: 600; color: var(--label);
   user-select: none; padding: 8px 16px; margin: -8px -16px;
@@ -174,15 +188,25 @@ body {
   border-bottom: 0.5px solid rgba(255,255,255,0.35);
 }
 .detail-back-btn {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.32);
-  backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 0.5px solid rgba(255,255,255,0.45);
-  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.5),
-              0 0.5px 2px rgba(0,0,0,0.06);
+  width: 36px; height: 36px; border-radius: 50%; position: relative; overflow: hidden;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,0.94), rgba(255,255,255,0.38) 42%, rgba(255,255,255,0.18) 74%),
+    linear-gradient(145deg, rgba(255,255,255,0.60), rgba(218,233,255,0.24));
+  backdrop-filter: blur(24px) saturate(220%); -webkit-backdrop-filter: blur(24px) saturate(220%);
+  border: 0.5px solid rgba(255,255,255,0.78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.94),
+              inset 0 -1px 0 rgba(0,80,170,0.08),
+              0 5px 14px rgba(24,74,130,0.11);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  cursor: pointer; transition: transform 0.14s ease;
 }
+.detail-back-btn::after {
+  content: ''; position: absolute; inset: 1px 5px auto; height: 42%;
+  border-radius: 50%; pointer-events: none;
+  background: linear-gradient(rgba(255,255,255,0.56), rgba(255,255,255,0));
+}
+.detail-back-btn:active { transform: scale(0.92); }
+.detail-back-btn svg { position: relative; z-index: 1; }
 .detail-edit-btn {
   background: none; border-radius: 16px;
   padding: 6px 14px; font-size: 15px; color: #007AFF; font-weight: 600;
@@ -380,6 +404,22 @@ body {
 .sv-action-btn.blue   { background: #007AFF; color: white; }
 .sv-action-btn.red    { background: #1C1C1E; color: #FF3B30; }
 .sv-action-btn.gray   { background: #1C1C1E; color: white; }
+.sv-caption {
+  margin: 7px 20px 0; color: #8E8E93; font-size: 13px; line-height: 1.35;
+}
+.sv-round-card { margin-bottom: 10px; }
+.sv-row select {
+  margin-left: auto; background: #2C2C2E; color: white; border: 1px solid #48484A;
+  border-radius: 8px; padding: 6px 9px; font: inherit;
+}
+.sv-name-row { display: grid; grid-template-columns: 28px 1fr 1fr; gap: 8px; align-items: center; }
+.sv-name-row .sv-name-num { color: #8E8E93; font-size: 14px; }
+.sv-name-row input { min-width: 0; text-align: left; font-size: 15px; }
+.sv-preset-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 0.5px solid #38383A; }
+.sv-preset-btn {
+  flex: 1; border: none; border-radius: 9px; padding: 9px 7px;
+  background: #2C2C2E; color: #0A84FF; font: 600 14px -apple-system, sans-serif;
+}
 
 /* Performance mode banner */
 #perf-banner {
@@ -551,12 +591,8 @@ body {
   font-size: 13px; font-weight: 600;
 }
 
-/* Peek overlay */
-#peek-overlay {
-  display: none; position: fixed; inset: 0; z-index: 450;
-  background: #fff;
-  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
-}
+.peek-coded-row { animation: peekSettle 0.18s ease-out; }
+@keyframes peekSettle { from { opacity: 0.78; } to { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -564,13 +600,17 @@ body {
 <!-- ═══════════════════ LIST VIEW ═══════════════════ -->
 <div id="list-view">
   <div class="list-nav">
-    <button class="nav-pill-btn">
+    <button class="nav-pill-btn" type="button" aria-label="Back">
       <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
         <path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
     <span class="list-nav-title" id="contacts-title">Contacts</span>
-    <button class="nav-pill-btn" style="font-size:22px;color:#007AFF;font-weight:300;padding-bottom:1px">+</button>
+    <button class="nav-pill-btn" type="button" aria-label="Add contact">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+        <path d="M8.5 2v13M2 8.5h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 
   <div class="my-card" id="my-card-row">
@@ -599,18 +639,6 @@ body {
 
 <!-- A-Z index -->
 <div id="section-index"></div>
-
-<!-- Peek overlay (shown on long-press of contacts tab when a contact is locked) -->
-<div id="peek-overlay">
-  <div class="list-nav">
-    <button class="nav-pill-btn" style="opacity:0;pointer-events:none">
-      <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <span class="list-nav-title">Contacts</span>
-    <button class="nav-pill-btn" style="opacity:0;pointer-events:none">+</button>
-  </div>
-  <div id="peek-contact-list"></div>
-</div>
 
 <!-- ═══════════════════ DETAIL VIEW ═══════════════════ -->
 <div id="detail-view">
@@ -754,7 +782,7 @@ body {
         </g>
       </svg>
     </div>
-    <span class="tab-label active">Contacts</span>
+    <span class="tab-label active" id="contacts-tab-label">Contacts</span>
   </button>
   <!-- Keypad — circle.grid.3x3.fill SF Symbol -->
   <button class="tab" id="keypad-tab">
@@ -801,15 +829,36 @@ body {
       <span class="sv-status-badge off" id="sv-perf-badge">OFF</span>
     </div>
     <div class="sv-status-row">
-      <span class="sv-status-label">Current Pick</span>
+      <span class="sv-status-label">Selections</span>
       <span class="sv-status-value" id="sv-pick-num">0</span>
     </div>
     <div class="sv-status-row">
-      <span class="sv-status-label">Next Forced Data</span>
+      <span class="sv-status-label">Next Search</span>
+      <span class="sv-status-value" id="sv-search-round">Round 1</span>
+    </div>
+    <div class="sv-status-row">
+      <span class="sv-status-label">Next Detail Slot</span>
       <span class="sv-status-value" id="sv-next-phone">—</span>
     </div>
   </div>
-  <button class="sv-action-btn red" onclick="resetPickCount()">Reset Pick Counter to Zero</button>
+  <button class="sv-action-btn red" onclick="resetPickCount()">Reset Routine</button>
+
+  <!-- ── SEARCH REVEAL ── -->
+  <div class="sv-section">Three-Digit Search</div>
+  <div class="sv-card">
+    <div class="sv-toggle-wrap">
+      <div class="sv-toggle-left">
+        <span class="sv-toggle-label">Show first name on Contacts tab</span>
+      </div>
+      <label class="ios-toggle">
+        <input type="checkbox" id="sv-tab-peek">
+        <span class="ios-slider"></span>
+      </label>
+    </div>
+  </div>
+  <p class="sv-caption">Off by default. The normal peek uses the initials of the top contact rows to spell the selected first and last names.</p>
+
+  <div id="sv-force-fields"></div>
 
   <!-- ── MY CARD ── -->
   <div class="sv-section">My Card (shown at top of list)</div>
@@ -838,7 +887,7 @@ body {
   </div>
 
   <!-- ── FORCED SEQUENCES ── -->
-  <div class="sv-section">Forced Sequences</div>
+  <div class="sv-section">Optional Detail Overrides</div>
   <div id="sv-sequence-fields"></div>
 
   <div style="height:20px"></div>
@@ -865,12 +914,16 @@ body {
       <p>Single tap the <span class="help-kbd">Keypad</span> tab. The Calls badge changes from <strong>241</strong> to <strong>242</strong>, which is your silent cue that forced data is active.</p>
     </div>
     <div class="help-row">
-      <h2>2. Let them choose a contact</h2>
-      <p>Any contact opened while performance mode is on receives the next forced data set from Trick Setup. Each opened contact advances the pick counter by one.</p>
+      <h2>2. Have them search three digits</h2>
+      <p>The exact three digits show your configured Round 1 contacts. Their phone numbers update automatically so every result contains those digits.</p>
     </div>
     <div class="help-row">
-      <h2>3. Turn performance mode off</h2>
-      <p>Double tap the <span class="help-kbd">Keypad</span> tab. The Calls badge returns to <strong>241</strong>, and contacts show their normal dummy information again.</p>
+      <h2>3. Let them open one result</h2>
+      <p>Their choice is locked. When you return to the list, read the initials down the top rows: first-name initials spell the chosen first name and last-name initials spell the last name.</p>
+    </div>
+    <div class="help-row">
+      <h2>4. Repeat or finish</h2>
+      <p>The next three-digit search uses Round 2. When finished, double tap <span class="help-kbd">Keypad</span> to restore the ordinary list and Calls badge.</p>
     </div>
   </div>
 
@@ -878,31 +931,31 @@ body {
   <div class="help-card">
     <div class="help-row">
       <h2>Open this page</h2>
-      <p>Swipe down with two fingers anywhere in the visible app. This replaces the old two-finger shortcut so you can quickly remember the routine.</p>
+      <p>Swipe down with two fingers.</p>
     </div>
     <div class="help-row">
       <h2>Open Trick Setup</h2>
       <p>Double tap the centered <span class="help-kbd">Contacts</span> title, or tap <span class="help-kbd">Setup</span> at the top of this page.</p>
     </div>
     <div class="help-row">
-      <h2>Peek locked search choice</h2>
-      <p>In performance mode, type in Search until only one to three last-name matches remain. The top match locks and the Calls badge becomes <strong>3</strong>. Long-press the <span class="help-kbd">Contacts</span> tab to temporarily reveal the locked contact; release to hide it.</p>
+      <h2>Optional tab peek</h2>
+      <p>In Trick Setup, you can also make the bottom <span class="help-kbd">Contacts</span> label change to the selected first name. Leave it off to use only the encoded top rows.</p>
     </div>
   </div>
 
   <div class="help-section-label">Setup Notes</div>
   <div class="help-card">
     <div class="help-row">
-      <h2>Forced sequences</h2>
-      <p>Trick Setup stores Pick 1, Pick 2, and Pick 3. The next forced phone number, email, birthday, company, address, and notes are displayed on the chosen contact detail page.</p>
+      <h2>Search rounds</h2>
+      <p>Choose one to six results for each round and edit every first and last name. Round 1 starts with mostly female names; Round 2 starts with gender-neutral names. The defaults use visibly different name lengths to make fishing easier.</p>
     </div>
     <div class="help-row">
-      <h2>Magic Number option</h2>
-      <p>Turn on Magic Number for a pick, enter two seed digits, and the app generates a ten-digit phone number by repeatedly adding the previous two digits modulo 10. The birthday auto-fills from the final phone digits.</p>
+      <h2>Optional detail overrides</h2>
+      <p>For a three-digit search result, the app supplies a matching phone number, email, and birthday automatically. Pick fields can still add company, address, and notes. Magic Number remains available for contacts opened outside the three-digit routine.</p>
     </div>
     <div class="help-row">
       <h2>Resetting</h2>
-      <p>Use <span class="help-kbd">Reset Pick Counter to Zero</span> in Trick Setup before a repeat performance. Turning performance mode on also resets the pick counter.</p>
+      <p>Use <span class="help-kbd">Reset Routine</span> to return to Round 1 and clear the peek. Turning performance mode on also starts fresh.</p>
     </div>
   </div>
 </div>
@@ -914,13 +967,40 @@ body {
 let pickCount = 0;
 let perfMode  = false;
 let searchQuery = '';
-let lockedContact = null; // { name } set when perf mode search narrows to 1
+let lockedContact = null; // the result selected during a three-digit performance search
+let searchRound = 0;
+let tabLabelPeek = false;
 let isMyCard = false; // true when detail view is showing the user's own My Card
 
 let SEQUENCE = [
   { phone:"(312) 555-0147", phoneLabel:"mobile", email:"info@example.com", birthday:"March 14", address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
   { phone:"(773) 555-0288", phoneLabel:"mobile", email:"hello@example.com",   birthday:"July 4",   address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
   { phone:"(847) 555-0391", phoneLabel:"mobile", email:"contact@example.net", birthday:"October 31",address:"", company:"", notes:"", useMagic:false, magicSeed:"" },
+];
+
+const FORCE_PRESETS = {
+  female: [
+    {first:'Anastasia', last:'Montgomery'}, // long / long
+    {first:'Mia',       last:'Kensington'}, // short / long
+    {first:'Genevieve', last:'Li'},         // long / short
+    {first:'Olivia',    last:'Carter'},
+    {first:'Eva',       last:'Fitzgerald'},
+    {first:'Alexandra', last:'Ng'},
+  ],
+  neutral: [
+    {first:'Remington', last:'Hawthorne'},  // long / long
+    {first:'Sam',       last:'Kensington'}, // short / long
+    {first:'Mackenzie', last:'Wu'},         // long / short
+    {first:'Jordan',    last:'Bailey'},
+    {first:'Alex',      last:'Montgomery'},
+    {first:'Emerson',   last:'Li'},
+  ],
+};
+
+const cloneForceContacts = preset => FORCE_PRESETS[preset].map(c => ({...c}));
+let FORCE_ROUNDS = [
+  {count:3, contacts:cloneForceContacts('female')},
+  {count:3, contacts:cloneForceContacts('neutral')},
 ];
 
 let myName  = "Caleb Summerhays";
@@ -937,6 +1017,15 @@ try {
     if (p.myPhone) myPhone = p.myPhone;
     if (p.myEmail) myEmail = p.myEmail;
     if (p.myPhoto) myPhoto = p.myPhoto;
+    if (Array.isArray(p.forceRounds)) {
+      FORCE_ROUNDS = FORCE_ROUNDS.map((fallback, i) => {
+        const savedRound = p.forceRounds[i];
+        if (!savedRound || !Array.isArray(savedRound.contacts)) return fallback;
+        const contacts = fallback.contacts.map((c, j) => ({...c, ...(savedRound.contacts[j] || {})}));
+        return {count:Math.max(1, Math.min(6, Number(savedRound.count) || 3)), contacts};
+      });
+    }
+    if (typeof p.tabLabelPeek === 'boolean') tabLabelPeek = p.tabLabelPeek;
   }
 } catch(e){}
 
@@ -1078,10 +1167,108 @@ const dName  = c => c.first ? c.first+' '+c.last : c.last;
 const inits  = c => c.first ? (c.first[0]+c.last[0]).toUpperCase() : c.last.substring(0,2).toUpperCase();
 const sortK  = c => (c.first ? c.last : c.last).toUpperCase();
 
+const PEEK_FIRST_NAMES = {
+  A:['Avery','Amelia','Aiden'], B:['Bianca','Blake','Brandon'], C:['Cameron','Claire','Caleb'],
+  D:['Dylan','Dana','Diego'], E:['Evelyn','Emerson','Ethan'], F:['Fiona','Faith','Felix'],
+  G:['Grace','Gabriel','Gemma'], H:['Harper','Hannah','Henry'], I:['Iris','Ian','Isla'],
+  J:['Jordan','Jamie','Julia'], K:['Kai','Katie','Kevin'], L:['Lily','Logan','Laura'],
+  M:['Maya','Morgan','Miles'], N:['Nora','Nathan','Noelle'], O:['Olivia','Owen','Opal'],
+  P:['Piper','Patrick','Phoebe'], Q:['Quinn','Quincy','Quentin'], R:['Riley','Rachel','Ryan'],
+  S:['Sofia','Sam','Sarah'], T:['Taylor','Theo','Tessa'], U:['Uma','Uriah','Uri'],
+  V:['Violet','Victor','Vera'], W:['Willow','William','Wren'], X:['Xavier','Xena','Xiomara'],
+  Y:['Yara','Yuri','Yasmin'], Z:['Zoe','Zach','Zara'],
+};
+const PEEK_LAST_NAMES = {
+  A:['Anderson','Adams','Archer'], B:['Bennett','Brooks','Bailey'], C:['Carter','Cooper','Clark'],
+  D:['Davis','Dunn','Diaz'], E:['Evans','Edwards','Ellis'], F:['Foster','Fletcher','Fox'],
+  G:['Grant','Green','Griffin'], H:['Harris','Hayes','Hall'], I:['Irving','Ingram','Ito'],
+  J:['Johnson','Jones','Jackson'], K:['Kensington','Kim','King'], L:['Lewis','Lee','Lane'],
+  M:['Montgomery','Mitchell','Morgan'], N:['Nguyen','Nelson','Novak'], O:['Owens','Ortiz','Olsen'],
+  P:['Parker','Patel','Price'], Q:['Quinn','Quade','Quick'], R:['Reynolds','Rivera','Ross'],
+  S:['Sullivan','Scott','Santos'], T:['Torres','Turner','Thomas'], U:['Underwood','Upton','Urban'],
+  V:['Vasquez','Vaughn','Vega'], W:['Williams','Wong','Ward'], X:['Xu','Xavier','Xiong'],
+  Y:['Young','Yates','York'], Z:['Zimmerman','Zhang','Zane'],
+};
+const CONTACT_COLORS = ['#5E5CE6','#FF6B6B','#4ECDC4','#45B7D1','#FD79A8','#00B894','#FDCB6E','#74B9FF','#A29BFE','#E17055'];
+
+function lettersOnly(value) {
+  return (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/gi, '').toUpperCase();
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+
+function formatPhoneDigits(digits) {
+  const d = String(digits).replace(/\D/g, '').padEnd(10, '0').slice(0, 10);
+  return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+}
+
+function phoneContaining(sequence, index) {
+  const bases = ['3125550147','7735550288','8475550391','6305550416','7085550523','2245550645'];
+  const offsets = [0,3,6,7,1,4];
+  const base = bases[index % bases.length].split('');
+  const offset = offsets[index % offsets.length];
+  String(sequence).slice(0,3).split('').forEach((digit, i) => { base[offset + i] = digit; });
+  return formatPhoneDigits(base.join(''));
+}
+
+function forcedSearchResults(digits) {
+  const round = FORCE_ROUNDS[Math.min(searchRound, FORCE_ROUNDS.length - 1)];
+  if (!round) return [];
+  return round.contacts.slice(0, round.count).map((saved, i) => {
+    const phone = phoneContaining(digits, i);
+    const c = {
+      first:(saved.first || '').trim() || 'Avery',
+      last:(saved.last || '').trim() || 'Carter',
+      color:CONTACT_COLORS[(searchRound * 3 + i) % CONTACT_COLORS.length],
+      phone,
+      _forcedSearch:true,
+      _searchRound:Math.min(searchRound, FORCE_ROUNDS.length - 1),
+    };
+    c.email = genEmail(c);
+    c.birthday = phoneToBirthday(phone);
+    return c;
+  });
+}
+
+function peekContactsFor(target) {
+  if (!target) return [];
+  const first = lettersOnly(target.first);
+  const last = lettersOnly(target.last);
+  const total = Math.max(first.length, last.length);
+  const filler = 'CONTACTMAGIC';
+  return Array.from({length:total}, (_, i) => {
+    const firstLetter = first[i] || filler[i % filler.length];
+    const lastLetter = last[i] || filler[(i + 4) % filler.length];
+    const firstChoices = PEEK_FIRST_NAMES[firstLetter] || PEEK_FIRST_NAMES.A;
+    const lastChoices = PEEK_LAST_NAMES[lastLetter] || PEEK_LAST_NAMES.C;
+    const c = {
+      first:firstChoices[i % firstChoices.length],
+      last:lastChoices[(i + 1) % lastChoices.length],
+      color:CONTACT_COLORS[i % CONTACT_COLORS.length],
+      phone:phoneContaining(String(731 + i).slice(-3), i),
+      _peekCode:true,
+    };
+    c.email = genEmail(c);
+    c.birthday = phoneToBirthday(c.phone);
+    return c;
+  });
+}
+
+function updateTabPeek() {
+  const label = document.getElementById('contacts-tab-label');
+  if (!label) return;
+  const first = lockedContact && lockedContact.contact ? lockedContact.contact.first : '';
+  label.textContent = tabLabelPeek && first ? first : 'Contacts';
+  label.style.fontSize = tabLabelPeek && first && first.length > 8 ? '8px' : '';
+}
+
 // ═══════════════════════════════════════════════════
 //  RENDER LIST  (supports search filtering)
 // ═══════════════════════════════════════════════════
 function renderList() {
+  updateTabPeek();
   // Update My Card avatar
   const parts = myName.trim().split(' ');
   const myInits = parts.length>1 ? (parts[0][0]+parts[parts.length-1][0]).toUpperCase() : myName.substring(0,2).toUpperCase();
@@ -1101,11 +1288,22 @@ function renderList() {
   const idx  = document.getElementById('section-index');
   list.innerHTML = ''; idx.innerHTML = '';
 
-  // Filter contacts based on search query
+  // Text searches behave normally. A three-digit search in performance mode
+  // returns the configured round, with the entered digits embedded in every phone.
   const q = searchQuery.trim().toLowerCase();
-  let filtered = q
-    ? contacts.filter(c => c.last.toLowerCase().includes(q))
-    : contacts;
+  const digits = q.replace(/\D/g, '');
+  const isNumericQuery = q !== '' && /^\d+$/.test(q);
+  const isForcedThreeDigitSearch = perfMode && isNumericQuery && digits.length === 3;
+  let filtered;
+  if (isForcedThreeDigitSearch) {
+    filtered = forcedSearchResults(digits);
+  } else if (q) {
+    filtered = isNumericQuery
+      ? contacts.filter(c => (c.phone || '').replace(/\D/g, '').includes(digits))
+      : contacts.filter(c => `${c.first} ${c.last}`.toLowerCase().includes(q));
+  } else {
+    filtered = contacts;
+  }
 
   if (filtered.length === 0) {
     list.innerHTML = '<div class="no-results">No contacts found</div>';
@@ -1118,10 +1316,24 @@ function renderList() {
 
   if (q) {
     // Flat list when searching — no section letters
-    filtered.sort((a,b)=>sortK(a).localeCompare(sortK(b))).forEach(c => {
+    const displayed = isForcedThreeDigitSearch
+      ? filtered
+      : [...filtered].sort((a,b)=>sortK(a).localeCompare(sortK(b)));
+    displayed.forEach(c => {
       list.appendChild(makeContactRow(c));
     });
   } else {
+    // Once a result is chosen, the first-name initials of these natural-looking
+    // top rows spell the chosen first name; their last-name initials spell the surname.
+    const searchIsOpen = document.getElementById('search-wrap').classList.contains('visible');
+    if (perfMode && lockedContact && lockedContact.contact && !searchIsOpen) {
+      peekContactsFor(lockedContact.contact).forEach(c => {
+        const row = makeContactRow(c);
+        row.classList.add('peek-coded-row');
+        list.appendChild(row);
+      });
+    }
+
     // Grouped by letter
     const groups = {};
     filtered.forEach(c => {
@@ -1151,14 +1363,32 @@ function makeContactRow(c) {
   const row = document.createElement('div');
   row.className = 'contact-row';
   const nameHtml = c.first
-    ? `${c.first} <span class="bold">${c.last}</span>`
-    : `<span class="bold">${c.last}</span>`;
+    ? `${escapeHtml(c.first)} <span class="bold">${escapeHtml(c.last)}</span>`
+    : `<span class="bold">${escapeHtml(c.last)}</span>`;
   row.innerHTML = `
     <div class="avatar" style="background:${c.color}">${inits(c)}</div>
     <div class="contact-name">${nameHtml}</div>
   `;
-  row.addEventListener('click', () => { isMyCard = false; openContact(c); });
+  row.addEventListener('click', () => {
+    isMyCard = false;
+    if (c._forcedSearch) lockForcedChoice(c);
+    openContact(c);
+  });
   return row;
+}
+
+function lockForcedChoice(c) {
+  lockedContact = {name:dName(c), contact:{...c}};
+  searchRound++;
+  setBadge('3');
+  searchQuery = '';
+  const input = document.getElementById('search-input');
+  if (input) input.value = '';
+  const wrap = document.getElementById('search-wrap');
+  if (wrap) wrap.classList.remove('visible');
+  const cancel = document.getElementById('search-cancel-btn');
+  if (cancel) cancel.style.display = 'none';
+  renderList();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1176,21 +1406,6 @@ function onSearchBlur() {
 function onSearchInput() {
   searchQuery = document.getElementById('search-input').value;
   renderList();
-
-  // Performance mode: when search narrows to 3 or fewer results, silently log the top
-  // contact so it can be revealed later via a long-press peek. Search is NOT auto-cleared —
-  // the user clears it themselves after noting the name.
-  if (perfMode && searchQuery.trim()) {
-    const q = searchQuery.trim().toLowerCase();
-    const matches = contacts.filter(c => c.last.toLowerCase().includes(q));
-    if (matches.length >= 1 && matches.length <= 3) {
-      const sorted = [...matches].sort((a,b) => sortK(a).localeCompare(sortK(b)));
-      lockedContact = { name: dName(sorted[0]), contact: sorted[0] };
-      // Badge flips to 3 as a subtle cue to the performer that a name is locked
-      setBadge('3');
-    }
-    // 0 results → do nothing (list already shows "No contacts found" via renderList)
-  }
 }
 function clearSearch() {
   searchQuery = '';
@@ -1206,7 +1421,14 @@ function showSearch() {
   const wrap = document.getElementById('search-wrap');
   if (wrap) wrap.classList.add('visible');
   const inp = document.getElementById('search-input');
-  if (inp) { inp.focus(); }
+  if (inp) {
+    inp.setAttribute('inputmode', perfMode ? 'numeric' : 'search');
+    inp.maxLength = perfMode ? 3 : 50;
+    inp.focus();
+  }
+  const tabLabel = document.getElementById('contacts-tab-label');
+  if (tabLabel) { tabLabel.textContent = 'Contacts'; tabLabel.style.fontSize = ''; }
+  renderList();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1215,9 +1437,11 @@ function showSearch() {
 function openContact(c) {
   // Choose data source: forced SEQUENCE when perf mode is ON, dummy data otherwise
   let f;
-  if (perfMode) {
+  if (perfMode && !c._peekCode) {
     const fi = Math.min(pickCount, SEQUENCE.length-1);
-    f = SEQUENCE[fi];
+    f = c._forcedSearch
+      ? {...SEQUENCE[fi], phone:c.phone, email:c.email, birthday:c.birthday}
+      : SEQUENCE[fi];
     pickCount++;
     updateStatusPanel();
   } else {
@@ -1380,14 +1604,21 @@ function setBadge(val) {
 
 function setPerfMode(on) {
   perfMode = on;
+  searchQuery = '';
+  const input = document.getElementById('search-input');
+  if (input) input.value = '';
   if (on) {
     pickCount = 0;
+    searchRound = 0;
     lockedContact = null;
     setBadge('242');
   } else {
+    searchRound = 0;
     lockedContact = null;
     setBadge('241');
   }
+  updateTabPeek();
+  renderList();
   updateStatusPanel();
 }
 
@@ -1399,15 +1630,22 @@ function updateStatusPanel() {
   }
   const pn = document.getElementById('sv-pick-num');
   if (pn) pn.textContent = pickCount;
+  const sr = document.getElementById('sv-search-round');
+  if (sr) sr.textContent = `Round ${Math.min(searchRound + 1, FORCE_ROUNDS.length)}`;
   const np = document.getElementById('sv-next-phone');
   if (np) {
     const next = SEQUENCE[Math.min(pickCount, SEQUENCE.length-1)];
-    np.textContent = next ? next.phone : '—';
+    np.textContent = next ? `Pick ${Math.min(pickCount + 1, SEQUENCE.length)}` : '—';
   }
 }
 
 function resetPickCount() {
   pickCount = 0;
+  searchRound = 0;
+  lockedContact = null;
+  setBadge(perfMode ? '242' : '241');
+  updateTabPeek();
+  renderList();
   updateStatusPanel();
 }
 
@@ -1449,7 +1687,63 @@ function formatPhoneInput(inp) {
 // ═══════════════════════════════════════════════════
 //  BUILD SETTINGS FIELDS
 // ═══════════════════════════════════════════════════
+function buildForceSettingsFields() {
+  const container = document.getElementById('sv-force-fields');
+  if (!container) return;
+  container.innerHTML = '';
+
+  FORCE_ROUNDS.forEach((round, roundIndex) => {
+    const roundNumber = roundIndex + 1;
+    const card = document.createElement('div');
+    card.className = 'sv-card sv-round-card';
+    card.innerHTML = `
+      <div class="sv-pick-header" style="border-top:none">Round ${roundNumber}${roundIndex === 0 ? ' · Mostly female' : ' · Gender-neutral'}</div>
+      <div class="sv-row">
+        <span class="sv-row-label">Results</span>
+        <select id="sv-force-count-${roundNumber}" onchange="toggleForceRows(${roundNumber})" aria-label="Number of contacts in round ${roundNumber}">
+          ${[1,2,3,4,5,6].map(n => `<option value="${n}" ${round.count === n ? 'selected' : ''}>${n} contacts</option>`).join('')}
+        </select>
+      </div>
+      ${Array.from({length:6}, (_, i) => {
+        const saved = round.contacts[i] || {first:'Avery', last:'Carter'};
+        return `
+          <div class="sv-row sv-name-row" data-force-round="${roundNumber}" data-force-index="${i}" style="${i >= round.count ? 'display:none' : ''}">
+            <span class="sv-name-num">${i + 1}</span>
+            <input type="text" id="sv-force-${roundNumber}-${i + 1}-first" value="${escapeHtml(saved.first)}" placeholder="First name" aria-label="Round ${roundNumber} contact ${i + 1} first name">
+            <input type="text" id="sv-force-${roundNumber}-${i + 1}-last" value="${escapeHtml(saved.last)}" placeholder="Last name" aria-label="Round ${roundNumber} contact ${i + 1} last name">
+          </div>`;
+      }).join('')}
+      <div class="sv-preset-row">
+        <button class="sv-preset-btn" type="button" onclick="applyForcePreset(${roundNumber}, 'female')">Female defaults</button>
+        <button class="sv-preset-btn" type="button" onclick="applyForcePreset(${roundNumber}, 'neutral')">Neutral defaults</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function toggleForceRows(roundNumber) {
+  const count = Number(document.getElementById(`sv-force-count-${roundNumber}`).value);
+  document.querySelectorAll(`[data-force-round="${roundNumber}"]`).forEach(row => {
+    row.style.display = Number(row.dataset.forceIndex) < count ? '' : 'none';
+  });
+}
+
+function applyForcePreset(roundNumber, preset) {
+  const source = FORCE_PRESETS[preset] || FORCE_PRESETS.female;
+  source.forEach((contact, i) => {
+    const first = document.getElementById(`sv-force-${roundNumber}-${i + 1}-first`);
+    const last = document.getElementById(`sv-force-${roundNumber}-${i + 1}-last`);
+    if (first) first.value = contact.first;
+    if (last) last.value = contact.last;
+  });
+  const count = document.getElementById(`sv-force-count-${roundNumber}`);
+  if (count) count.value = '3';
+  toggleForceRows(roundNumber);
+}
+
 function buildSettingsFields() {
+  buildForceSettingsFields();
   const container = document.getElementById('sv-sequence-fields');
   container.innerHTML = '';
 
@@ -1624,7 +1918,10 @@ function saveMyCardEdit() {
   myPhoto = _mcEditPhoto;
 
   try {
-    localStorage.setItem('mc_v2', JSON.stringify({seq:SEQUENCE, myName, myPhone, myEmail, myPhoto}));
+    localStorage.setItem('mc_v2', JSON.stringify({
+      seq:SEQUENCE, myName, myPhone, myEmail, myPhoto,
+      forceRounds:FORCE_ROUNDS, tabLabelPeek,
+    }));
   } catch(e){}
 
   closeMyCardEdit();
@@ -1671,7 +1968,6 @@ function openHelp() {
   const help = document.getElementById('help-view');
   if (!help) return;
   closeSettings();
-  endPeek();
   help.style.display = 'block';
   help.setAttribute('aria-hidden', 'false');
   help.scrollTop = 0;
@@ -1697,6 +1993,7 @@ function openSettings() {
   document.getElementById('sv-myname').value  = myName;
   document.getElementById('sv-myphone').value = myPhone;
   document.getElementById('sv-myemail').value = myEmail;
+  document.getElementById('sv-tab-peek').checked = tabLabelPeek;
 
   // Photo preview
   const prev = document.getElementById('sv-photo-preview');
@@ -1750,77 +2047,33 @@ function saveSettings() {
   if (nm) myName = nm;
   myPhone = document.getElementById('sv-myphone').value.trim();
   myEmail = document.getElementById('sv-myemail').value.trim();
+  tabLabelPeek = document.getElementById('sv-tab-peek').checked;
+
+  FORCE_ROUNDS = FORCE_ROUNDS.map((round, roundIndex) => {
+    const roundNumber = roundIndex + 1;
+    const count = Math.max(1, Math.min(6, Number(document.getElementById(`sv-force-count-${roundNumber}`).value) || 3));
+    const contactsForRound = Array.from({length:6}, (_, i) => {
+      const fallback = round.contacts[i] || FORCE_PRESETS[roundIndex === 0 ? 'female' : 'neutral'][i];
+      const first = document.getElementById(`sv-force-${roundNumber}-${i + 1}-first`).value.trim();
+      const last = document.getElementById(`sv-force-${roundNumber}-${i + 1}-last`).value.trim();
+      return {first:first || fallback.first, last:last || fallback.last};
+    });
+    return {count, contacts:contactsForRound};
+  });
 
   try {
-    localStorage.setItem('mc_v2', JSON.stringify({seq:SEQUENCE, myName, myPhone, myEmail, myPhoto}));
+    localStorage.setItem('mc_v2', JSON.stringify({
+      seq:SEQUENCE, myName, myPhone, myEmail, myPhoto,
+      forceRounds:FORCE_ROUNDS, tabLabelPeek,
+    }));
   } catch(e){}
 
+  updateTabPeek();
   renderList();
   closeSettings();
 }
 
-// ═══════════════════════════════════════════════════
-//  PEEK — long-press Contacts tab to reveal locked contact
-// ═══════════════════════════════════════════════════
-let peekHoldTimer = null;
-let isPeeking = false;
-
-function startPeek() {
-  if (!lockedContact) return;
-  isPeeking = true;
-  const c = lockedContact.contact;
-  const nameHtml = c.first
-    ? `${c.first} <span class="bold">${c.last}</span>`
-    : `<span class="bold">${c.last}</span>`;
-  document.getElementById('peek-contact-list').innerHTML = `
-    <div class="section-letter">${sortK(c)[0]}</div>
-    <div class="contact-row">
-      <div class="avatar" style="background:${c.color}">${inits(c)}</div>
-      <div class="contact-name">${nameHtml}</div>
-    </div>
-  `;
-  document.getElementById('peek-overlay').style.display = 'block';
-}
-
-function endPeek() {
-  if (!isPeeking) return;
-  isPeeking = false;
-  document.getElementById('peek-overlay').style.display = 'none';
-}
-
 const contactsTabEl = document.getElementById('contacts-tab-list');
-const LONG_PRESS_DURATION = 100; // ms to hold before peek activates
-
-contactsTabEl.addEventListener('touchstart', e => {
-  peekHoldTimer = setTimeout(startPeek, LONG_PRESS_DURATION);
-}, {passive: true});
-
-contactsTabEl.addEventListener('touchend', () => {
-  clearTimeout(peekHoldTimer);
-  peekHoldTimer = null;
-  endPeek();
-}, {passive: true});
-
-contactsTabEl.addEventListener('touchcancel', () => {
-  clearTimeout(peekHoldTimer);
-  peekHoldTimer = null;
-  endPeek();
-}, {passive: true});
-
-// Also support mouse for desktop testing
-contactsTabEl.addEventListener('mousedown', () => {
-  peekHoldTimer = setTimeout(startPeek, LONG_PRESS_DURATION);
-});
-contactsTabEl.addEventListener('mouseup', () => {
-  clearTimeout(peekHoldTimer);
-  peekHoldTimer = null;
-  endPeek();
-});
-contactsTabEl.addEventListener('mouseleave', () => {
-  clearTimeout(peekHoldTimer);
-  peekHoldTimer = null;
-  endPeek();
-});
 
 // ═══════════════════════════════════════════════════
 //  SECRET TRIGGERS — open help and setup
